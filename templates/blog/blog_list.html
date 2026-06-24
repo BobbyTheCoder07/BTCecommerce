@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Developer Blog | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-feather"></i> Creator Blog</span>
+            <h1 class="font-heading fw-bold display-4">Coding Tips & Stories</h1>
+            <p class="text-muted fs-5">Read python, web dev guides, career tips and updates by Bobby.</p>
+        </div>
+        
+        <!-- Filters & Search -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-8">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'blog_list' %}" class="btn btn-sm {% if not selected_category %}btn-premium{% else %}btn-premium-outline{% endif %}">All Articles</a>
+                    {% for val, name in categories %}
+                        <a href="{% url 'blog_list' %}?category={{ val }}" class="btn btn-sm {% if selected_category == val %}btn-premium{% else %}btn-premium-outline{% endif %}">{{ name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <form method="GET" action="{% url 'blog_list' %}" class="d-flex gap-2">
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                    <input type="text" name="search" class="form-control rounded-3 form-control-sm" placeholder="Search articles..." value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-premium btn-sm px-3"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Featured Post Card (Only shown on page 1 of general view) -->
+        {% if featured_post and not request.GET.page and not selected_category and not request.GET.search %}
+            <div class="card glass-card border-0 overflow-hidden mb-5 shadow-md">
+                <div class="row g-0">
+                    <div class="col-lg-6">
+                        <img src="{{ featured_post.thumbnail.url }}" alt="{{ featured_post.title }}" class="img-fluid h-100 w-100" style="object-fit: cover; min-height: 280px;">
+                    </div>
+                    <div class="col-lg-6 p-5 d-flex flex-column justify-content-center">
+                        <span class="badge bg-dark align-self-start mb-3 text-capitalize">{{ featured_post.get_category_display }}</span>
+                        <h2 class="font-heading fw-bold text-dark mb-3">
+                            <a href="{% url 'blog_detail' featured_post.slug %}" class="text-dark text-decoration-none">{{ featured_post.title }}</a>
+                        </h2>
+                        <p class="text-muted small mb-4">{{ featured_post.content_markdown|striptags|truncatewords:25 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="text-muted small"><i class="fa-solid fa-eye me-1"></i> {{ featured_post.views }} reads</span>
+                            <a href="{% url 'blog_detail' featured_post.slug %}" class="btn btn-premium">Read Article</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Blog posts grid -->
+        <div class="row g-4">
+            {% if posts %}
+                {% for post in posts %}
+                    <!-- Skip rendering featured post again on page 1 if it's already shown above -->
+                    {% if not featured_post or post.id != featured_post.id or request.GET.page or selected_category or request.GET.search %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card glass-card border-0 h-100 overflow-hidden">
+                                <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <span class="badge bg-light text-dark align-self-start mb-2 text-capitalize">{{ post.get_category_display }}</span>
+                                    <h4 class="font-heading fw-bold mb-3 text-dark text-truncate-2" style="min-height: 54px;">
+                                        <a href="{% url 'blog_detail' post.slug %}" class="text-dark text-decoration-none">{{ post.title }}</a>
+                                    </h4>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-light">
+                                        <span class="text-muted small"><i class="fa-solid fa-clock me-1"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                                        <a href="{% url 'blog_detail' post.slug %}" class="btn btn-sm btn-premium">Read</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fa-regular fa-folder-open display-4 text-muted mb-3"></i>
+                    <h4 class="fw-bold text-dark">No Articles Found</h4>
+                    <p class="text-muted">Try looking for other topics or tags.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link border-0 rounded-3 text-dark me-2" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"><i class="fa-solid fa-angle-left"></i></a></li>
+                        {% endif %}
+                        <li class="page-item"><span class="page-link border-0 rounded-3 bg-primary text-white me-2" style="background-color: var(--accent) !important;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link border-0 rounded-3 text-dark" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"><i class="fa-solid fa-angle-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

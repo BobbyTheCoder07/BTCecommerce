@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Digital Products Store | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 dot-pattern">
+    <div class="container py-4">
+        <!-- Section Header -->
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-store"></i> Creator Store</span>
+            <h1 class="font-heading fw-bold display-4">Digital Ebooks & Resources</h1>
+            <p class="text-muted fs-5">Premium developer study manuals, visual code blueprints, and templates.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- 2. Ebook Categories & 3. Ebook Filters (Sidebar) -->
+            <div class="col-lg-3">
+                <div class="card glass-card border-0 p-4 sticky-top" style="top: 100px; z-index: 10;">
+                    <h5 class="font-heading fw-bold mb-4"><i class="fa-solid fa-sliders text-primary me-2" style="color: var(--accent) !important;"></i>Filters</h5>
+                    
+                    <form method="GET" action="{% url 'product_list' %}">
+                        <!-- Category Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Category</label>
+                            <select name="category" class="form-select rounded-3 py-2 small" onchange="this.form.submit()">
+                                <option value="">All Categories</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Language Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Programming Language</label>
+                            <select name="language" class="form-select rounded-3 py-2 small" onchange="this.form.submit()">
+                                <option value="">All Languages</option>
+                                {% for lang_val, lang_name in languages %}
+                                    <option value="{{ lang_val }}" {% if selected_language == lang_val %}selected{% endif %}>{{ lang_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Difficulty Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Difficulty Level</label>
+                            <select name="difficulty" class="form-select rounded-3 py-2 small" onchange="this.form.submit()">
+                                <option value="">All Levels</option>
+                                {% for diff_val, diff_name in difficulties %}
+                                    <option value="{{ diff_val }}" {% if selected_difficulty == diff_val %}selected{% endif %}>{{ diff_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Free / Paid -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Pricing</label>
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="price_type" value="" id="priceAll" {% if not selected_price_type %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label small" for="priceAll">All</label>
+                            </div>
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="price_type" value="free" id="priceFree" {% if selected_price_type == 'free' %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label small" for="priceFree">Free Resources</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="price_type" value="paid" id="pricePaid" {% if selected_price_type == 'paid' %}checked{% endif %} onchange="this.form.submit()">
+                                <label class="form-check-label small" for="pricePaid">Premium Resources</label>
+                            </div>
+                        </div>
+
+                        <!-- Price Ranges -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Price Range (₹)</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" name="min_price" class="form-control py-1 px-2 small" placeholder="Min" value="{{ min_price }}">
+                                <input type="number" name="max_price" class="form-control py-1 px-2 small" placeholder="Max" value="{{ max_price }}">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-premium btn-sm">Apply Filters</button>
+                            <a href="{% url 'product_list' %}" class="btn btn-premium-outline btn-sm text-center">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 1. Ebook Products Grid -->
+            <div class="col-lg-9">
+                <!-- Sorting & Search Summary -->
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 bg-white p-3 rounded-4 border border-light shadow-sm">
+                    <span class="text-muted small">Showing {{ products.count }} product(s)</span>
+                    
+                    <form method="GET" class="d-flex align-items-center gap-2">
+                        <!-- Keep other filter values as hidden fields -->
+                        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                        {% if selected_language %}<input type="hidden" name="language" value="{{ selected_language }}">{% endif %}
+                        {% if selected_difficulty %}<input type="hidden" name="difficulty" value="{{ selected_difficulty }}">{% endif %}
+                        {% if selected_price_type %}<input type="hidden" name="price_type" value="{{ selected_price_type }}">{% endif %}
+                        {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
+                        {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
+                        
+                        <label class="small text-muted text-nowrap">Sort By</label>
+                        <select name="sort" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                            <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest</option>
+                            <option value="price_low" {% if selected_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if selected_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="popular" {% if selected_sort == 'popular' %}selected{% endif %}>Popular</option>
+                        </select>
+                    </form>
+                </div>
+                
+                <!-- Main Products Grid -->
+                <div class="row g-4">
+                    {% if products %}
+                        {% for product in products %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card glass-card h-100 border-0 overflow-hidden">
+                                    <div class="position-relative">
+                                        <img src="{{ product.thumbnail.url }}" alt="{{ product.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <span class="position-absolute top-0 end-0 m-3 badge bg-dark text-capitalize">{{ product.category.name }}</span>
+                                    </div>
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <span class="text-uppercase small text-muted fw-bold" style="font-size: 0.75rem;">{{ product.get_programming_language_display }}</span>
+                                            <span class="text-warning small"><i class="fa-solid fa-star"></i> {{ product.rating }}</span>
+                                        </div>
+                                        <h5 class="card-title font-heading fw-bold text-dark text-truncate-2 flex-grow-1" style="min-height: 48px;">
+                                            <a href="{% url 'product_detail' product.slug %}" class="text-dark text-decoration-none">{{ product.title }}</a>
+                                        </h5>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                                            <div>
+                                                {% if product.is_free %}
+                                                    <span class="fw-bold text-success fs-5">FREE</span>
+                                                {% else %}
+                                                    <span class="fw-bold text-dark fs-5">₹{{ product.current_price }}</span>
+                                                    {% if product.has_discount %}
+                                                        <span class="text-decoration-line-through text-muted small ms-2">₹{{ product.price }}</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row g-2 mt-auto">
+                                            <div class="col-8">
+                                                <button class="btn btn-premium btn-sm w-100" onclick="addToCart({{ product.id }})">Add To Cart</button>
+                                            </div>
+                                            <div class="col-4">
+                                                <a href="{% url 'product_detail' product.slug %}" class="btn btn-premium-outline btn-sm w-100" title="View Details"><i class="fa-regular fa-eye"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center py-5">
+                            <i class="fa-solid fa-box-open display-4 text-muted mb-3"></i>
+                            <h4 class="fw-bold text-dark">No Products Found</h4>
+                            <p class="text-muted">Try resetting your filters or adjusting your search term.</p>
+                            <a href="{% url 'product_list' %}" class="btn btn-premium-outline mt-3">Reset All Filters</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Featured Ebooks Showcase -->
+{% if featured_products %}
+<section class="py-5 bg-white border-top border-bottom border-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-star"></i> Featured Products</span>
+            <h2 class="font-heading fw-bold">Curated Handbooks & Guides</h2>
+            <p class="text-muted">Handpicked blueprints recommended by Bobby for mastering development quickly.</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% for prod in featured_products %}
+                <div class="col-lg-10">
+                    <div class="card glass-card border-0 p-4 rounded-4 shadow-md">
+                        <div class="row align-items-center g-4">
+                            <div class="col-md-4 text-center">
+                                <img src="{{ prod.thumbnail.url }}" alt="{{ prod.title }}" class="img-fluid rounded-3 shadow" style="max-height: 220px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-8">
+                                <span class="badge bg-primary bg-opacity-10 text-primary mb-2" style="color: var(--accent) !important;">{{ prod.category.name }}</span>
+                                <h3 class="font-heading fw-bold mb-2 text-dark">{{ prod.title }}</h3>
+                                <p class="text-muted small mb-3">{{ prod.description|truncatewords:45 }}</p>
+                                <div class="d-flex align-items-baseline gap-2 mb-4">
+                                    <span class="fs-3 fw-bold text-dark">₹{{ prod.current_price }}</span>
+                                    {% if prod.has_discount %}
+                                        <span class="text-decoration-line-through text-muted small">₹{{ prod.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <button class="btn btn-premium" onclick="addToCart({{ prod.id }})"><i class="fa-solid fa-basket-shopping me-2"></i>Add to Cart</button>
+                                    <a href="{% url 'product_detail' prod.slug %}" class="btn btn-premium-outline">Read Book Overview</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 5. Features Section (Trust Building Below Ebooks) -->
+<section class="py-5 bg-light bg-opacity-25 dot-pattern">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-shield-halved"></i> Bobby's Trust Guarantee</span>
+            <h2 class="font-heading fw-bold">Why Shop Digital Blueprints Here?</h2>
+            <p class="text-muted">High quality resources tailored directly for practical developers.</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <!-- Feature Card 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card glass-card border-0 p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; color: var(--accent) !important;">
+                        <i class="fa-solid fa-cloud-arrow-down fs-4"></i>
+                    </div>
+                    <h5 class="font-heading fw-bold mb-2">Instant Download</h5>
+                    <p class="text-muted small mb-0">Get immediate access to your PDF manuals, templates, and code files directly inside your secure user dashboard right after payment verification.</p>
+                </div>
+            </div>
+
+            <!-- Feature Card 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card glass-card border-0 p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; color: var(--accent) !important;">
+                        <i class="fa-solid fa-infinite fs-4"></i>
+                    </div>
+                    <h5 class="font-heading fw-bold mb-2">Lifetime Access</h5>
+                    <p class="text-muted small mb-0">Purchase once and download your files anytime you want. All future version modifications, fixes, and content additions are 100% free forever.</p>
+                </div>
+            </div>
+
+            <!-- Feature Card 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card glass-card border-0 p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; color: var(--accent) !important;">
+                        <i class="fa-solid fa-graduation-cap fs-4"></i>
+                    </div>
+                    <h5 class="font-heading fw-bold mb-2">Beginner Friendly</h5>
+                    <p class="text-muted small mb-0">Written in plain English with structured code commentary and step-by-step logic sheets. Ideal for bootcamp students and self-taught developers.</p>
+                </div>
+            </div>
+
+            <!-- Feature Card 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card glass-card border-0 p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; color: var(--accent) !important;">
+                        <i class="fa-solid fa-code-branch fs-4"></i>
+                    </div>
+                    <h5 class="font-heading fw-bold mb-2">Source Code Included</h5>
+                    <p class="text-muted small mb-0">Every project book comes packaged with fully operational github files, test datasets, deployment configs, and pre-packaged SQLite databases.</p>
+                </div>
+            </div>
+
+            <!-- Feature Card 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card glass-card border-0 p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; color: var(--accent) !important;">
+                        <i class="fa-solid fa-arrows-spin fs-4"></i>
+                    </div>
+                    <h5 class="font-heading fw-bold mb-2">Constantly Updated</h5>
+                    <p class="text-muted small mb-0">Manuals and template setups are routinely updated to match modern Python, Django 5.x, and frontend CSS standard compatibility layouts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

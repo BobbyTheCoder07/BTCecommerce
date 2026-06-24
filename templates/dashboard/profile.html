@@ -1,0 +1,32 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<h3 class="font-heading fw-bold mb-4 text-dark"><i class="fa-solid fa-user-gear me-2 text-primary" style="color: var(--accent) !important;"></i>Profile Settings</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label fw-semibold small text-dark">First Name</label>
+            <input type="text" name="first_name" class="form-control py-2 rounded-3" value="{{ user.first_name }}" placeholder="Your first name">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-semibold small text-dark">Last Name</label>
+            <input type="text" name="last_name" class="form-control py-2 rounded-3" value="{{ user.last_name }}" placeholder="Your last name">
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold small text-dark">Email Address</label>
+            <input type="email" name="email" class="form-control py-2 rounded-3" value="{{ user.email }}" required placeholder="email@address.com">
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold small text-dark">Username (ReadOnly)</label>
+            <input type="text" class="form-control py-2 rounded-3 bg-light" value="{{ user.username }}" readonly>
+        </div>
+        
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-premium px-4">Update Profile Settings</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

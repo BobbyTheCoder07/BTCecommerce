@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Analytics Dashboard | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+            <div>
+                <span class="badge-premium mb-2"><i class="fa-solid fa-chart-line"></i> Administrator Control Room</span>
+                <h1 class="font-heading fw-bold display-5 mb-0">Business Analytics Dashboard</h1>
+            </div>
+            <a href="{% url 'dashboard_overview' %}" class="btn btn-premium-outline"><i class="fa-solid fa-arrow-left me-2"></i>User Dashboard</a>
+        </div>
+        
+        <!-- Key Metrics Row -->
+        <div class="row g-4 mb-5 text-center">
+            <div class="col-md-3">
+                <div class="card glass-card border-0 p-4 shadow-sm" style="border-top: 4px solid var(--accent) !important;">
+                    <h6 class="text-muted small text-uppercase mb-2">Total Gross Revenue</h6>
+                    <h2 class="font-heading fw-bold text-dark mb-0">₹{{ total_revenue }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-card border-0 p-4 shadow-sm">
+                    <h6 class="text-muted small text-uppercase mb-2">Checkout Conversion Rate</h6>
+                    <h2 class="font-heading fw-bold text-dark mb-0">{{ conversion_rate|floatformat:1 }}%</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-card border-0 p-4 shadow-sm">
+                    <h6 class="text-muted small text-uppercase mb-2">User Registrations</h6>
+                    <h2 class="font-heading fw-bold text-dark mb-0">{{ total_users }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card glass-card border-0 p-4 shadow-sm">
+                    <h6 class="text-muted small text-uppercase mb-2">Paid Transactions</h6>
+                    <h2 class="font-heading fw-bold text-dark mb-0">{{ completed_orders_count }} / {{ total_orders }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Panel -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm">
+                    <h5 class="font-heading fw-bold text-dark mb-4">Daily Sales Analytics</h5>
+                    <canvas id="dailySalesChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm">
+                    <h5 class="font-heading fw-bold text-dark mb-4">Monthly Revenue Trends</h5>
+                    <canvas id="monthlySalesChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Manual UPI Approvals -->
+        <div class="card glass-card border-0 p-4 shadow-sm mb-5" style="border-left: 4px solid var(--accent) !important;">
+            <h4 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-qrcode text-success me-2"></i>Pending Offline UPI Verifications</h4>
+            
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead>
+                        <tr class="text-muted fs-7">
+                            <th>User</th>
+                            <th>Order ID</th>
+                            <th>Grand Total</th>
+                            <th>UTR Reference Number</th>
+                            <th>Submitted Date</th>
+                            <th class="text-end">Verification Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pending_upi_orders %}
+                            {% for ord in pending_upi_orders %}
+                                <tr>
+                                    <td class="small fw-bold text-dark">{{ ord.user.username }}</td>
+                                    <td class="small text-muted" title="{{ ord.order_id }}">{{ ord.order_id|slice:":12"|upper }}...</td>
+                                    <td class="small fw-bold text-dark">₹{{ ord.grand_total }}</td>
+                                    <td class="small fw-bold text-primary font-heading">{{ ord.upi_utr }}</td>
+                                    <td class="small text-muted">{{ ord.created_at|date:"d M, Y H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'admin_approve_upi' ord.id %}" class="btn btn-sm btn-success px-3 py-1.5 fs-8"><i class="fa-regular fa-circle-check me-1"></i> Approve Payment</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted small">No pending UPI manual verifications requested. Everything is clean!</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Best-Sellers & Transaction Logs -->
+        <div class="row g-4">
+            <!-- Best selling products -->
+            <div class="col-lg-5">
+                <div class="card glass-card border-0 p-4 h-100 shadow-sm">
+                    <h5 class="font-heading fw-bold text-dark mb-4">Top Selling Digital Assets</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                        {% if best_sellers %}
+                            {% for bs in best_sellers %}
+                                <li class="d-flex justify-content-between align-items-center pb-2 border-bottom border-light">
+                                    <div>
+                                        <h6 class="font-heading fw-bold text-dark mb-0 small">{{ bs.product__title }}</h6>
+                                        <span class="text-muted fs-8">Price: ₹{{ bs.product__price }}</span>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill" style="background-color: var(--accent) !important;">{{ bs.units_sold }} Sold</span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small">No product sales statistics recorded yet.</p>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recent Transactions logs -->
+            <div class="col-lg-7">
+                <div class="card glass-card border-0 p-4 h-100 shadow-sm">
+                    <h5 class="font-heading fw-bold text-dark mb-4">Recent Transaction History</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead>
+                                <tr class="text-muted fs-7">
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_orders %}
+                                    {% for ord in recent_orders %}
+                                        <tr>
+                                            <td class="small fw-bold text-dark">{{ ord.user.username }}</td>
+                                            <td class="small text-muted">{{ ord.created_at|date:"d M, H:i" }}</td>
+                                            <td class="small fw-bold text-dark">₹{{ ord.grand_total }}</td>
+                                            <td class="small text-muted">
+                                                {% if ord.razorpay_payment_id %}
+                                                    Razorpay
+                                                {% elif ord.upi_utr %}
+                                                    UPI Manual
+                                                {% else %}
+                                                    None
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if ord.is_paid %}
+                                                    <span class="badge bg-success bg-opacity-10 text-success text-capitalize">Paid</span>
+                                                {% elif ord.upi_verification_requested %}
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning text-capitalize">Verifying</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger text-capitalize">Unpaid</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">No transactions found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Load configurations
+        const dailyLabels = JSON.parse('{{ daily_labels_json|safe }}');
+        const dailyValues = JSON.parse('{{ daily_values_json|safe }}');
+        
+        const monthlyLabels = JSON.parse('{{ monthly_labels_json|safe }}');
+        const monthlyValues = JSON.parse('{{ monthly_values_json|safe }}');
+
+        // Daily line chart
+        const ctxDaily = document.getElementById('dailySalesChart').getContext('2d');
+        new Chart(ctxDaily, {
+            type: 'line',
+            data: {
+                labels: dailyLabels.length ? dailyLabels : ['Jun 20', 'Jun 21', 'Jun 22', 'Jun 23', 'Jun 24'],
+                datasets: [{
+                    label: 'Gross Sales (₹)',
+                    data: dailyValues.length ? dailyValues : [12000, 15000, 9000, 24000, 18000],
+                    borderColor: '#FF7A00',
+                    backgroundColor: 'rgba(255, 122, 0, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Monthly bar chart
+        const ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(ctxMonthly, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels.length ? monthlyLabels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Gross (₹)',
+                    data: monthlyValues.length ? monthlyValues : [45000, 60000, 52000, 75000, 90000, 115000],
+                    backgroundColor: '#FFA94D',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

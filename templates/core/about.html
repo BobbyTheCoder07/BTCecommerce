@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About BobbyTheCoder | Personal Brand & Journey{% endblock %}
+
+{% block content %}
+<section class="py-5 position-relative overflow-hidden grid-pattern">
+    <div class="container py-5">
+        <!-- Section Header -->
+        <div class="row align-items-center mb-5 g-5">
+            <!-- Left Side: Short Pitch -->
+            <div class="col-lg-6">
+                <span class="badge-premium mb-3"><i class="fa-solid fa-circle-user"></i> The Story</span>
+                <h1 class="font-heading fw-bold display-4 mb-4">Who is BobbyTheCoder?</h1>
+                <p class="text-muted leading-relaxed">
+                    BobbyTheCoder is a premium digital brand dedicated to empowering developers, founders, and students to build production-grade web systems. I am Bobby, a software engineer, technical writer, and coding coach.
+                </p>
+                <p class="text-muted leading-relaxed">
+                    I believe coding shouldn't be learned through abstract slides, but through launching actual, working codebases. I bridge the gap between classroom syntax and production deployment by delivering structured ebooks, clean boilerplate templates, and expert freelance development services.
+                </p>
+                <div class="d-flex gap-2 flex-wrap mt-4">
+                    <a href="https://youtube.com/@BobbyTheCoder" target="_blank" class="btn btn-premium btn-sm"><i class="fa-brands fa-youtube me-2"></i>YouTube</a>
+                    <a href="https://instagram.com/bobby.thecoder" target="_blank" class="btn btn-premium-outline btn-sm"><i class="fa-brands fa-instagram me-2"></i>Instagram</a>
+                    <a href="https://github.com" target="_blank" class="btn btn-premium-outline btn-sm"><i class="fa-brands fa-github me-2"></i>GitHub</a>
+                </div>
+            </div>
+            
+            <!-- Right Side: Graphic portrait styling -->
+            <div class="col-lg-6 text-center">
+                <div class="position-relative d-inline-block">
+                    <!-- Glow Blob -->
+                    <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-20" style="width: 300px; height: 300px; filter: blur(50px); z-index: -1; background-color: var(--accent) !important;"></div>
+                    
+                    <div class="card glass-card border-0 p-4 shadow-lg rounded-4 text-start" style="max-width: 360px; transform: rotate(-1deg);">
+                        <div class="bg-gradient text-white rounded-3 p-4 mb-3 d-flex flex-column justify-content-between text-center" style="height: 240px; background: linear-gradient(135deg, #FF7A00 0%, #FFA94D 100%);">
+                            <span class="small font-heading fw-bold text-uppercase">Founder & Creator</span>
+                            <h2 class="font-heading fw-bold">BOBBY THE CODER</h2>
+                            <span class="small">Master Web Architect</span>
+                        </div>
+                        <h6 class="font-heading fw-bold mb-1 text-dark">Bobby's Commitment</h6>
+                        <p class="text-muted small mb-0">Clean code structures. Optimized queries. Scalable deployments.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Progress Indicators -->
+        <div class="py-5 border-top border-light my-5">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="badge-premium mb-2"><i class="fa-solid fa-chart-line"></i> Technical Expertise</span>
+                    <h2 class="font-heading fw-bold mb-4">Core Skill Index</h2>
+                    <p class="text-muted small mb-4">Bobby has spent years fine-tuning backend scaling, database indexing, visual layout frameworks, and deployment configurations.</p>
+                    
+                    <!-- Progress Bar 1 -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small fw-bold mb-1">
+                            <span>Django & Python Backend</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: 95%; background-color: var(--accent);" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar 2 -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small fw-bold mb-1">
+                            <span>HTML5, CSS3 & Responsive Design</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: 90%; background-color: var(--accent);" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar 3 -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small fw-bold mb-1">
+                            <span>JavaScript & Dom Operations</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: 85%; background-color: var(--accent);" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar 4 -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small fw-bold mb-1">
+                            <span>Databases (PostgreSQL, MySQL, SQLite)</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: 90%; background-color: var(--accent);" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Grid -->
+                <div class="col-lg-6">
+                    <h3 class="font-heading fw-bold mb-4 text-dark">Brand Accomplishments</h3>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="card glass-card border-0 p-4 text-center">
+                                <h4 class="fw-bold fs-1 mb-1 text-primary" style="color: var(--accent) !important;">12K+</h4>
+                                <span class="text-muted small">Students Taught</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card glass-card border-0 p-4 text-center">
+                                <h4 class="fw-bold fs-1 mb-1 text-primary" style="color: var(--accent) !important;">150+</h4>
+                                <span class="text-muted small">Boilerplates Shipped</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card glass-card border-0 p-4 text-center">
+                                <h4 class="fw-bold fs-1 mb-1 text-primary" style="color: var(--accent) !important;">48+</h4>
+                                <span class="text-muted small">Deployments Managed</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card glass-card border-0 p-4 text-center">
+                                <h4 class="fw-bold fs-1 mb-1 text-primary" style="color: var(--accent) !important;">4.9 ★</h4>
+                                <span class="text-muted small">Average Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission -->
+        <div class="card glass-card border-0 p-5 rounded-4 shadow-sm text-center mb-5">
+            <span class="badge-premium mb-2 mx-auto"><i class="fa-solid fa-rocket"></i> Brand Mission</span>
+            <h3 class="font-heading fw-bold mb-3 text-dark">Our core focus is execution.</h3>
+            <p class="text-muted small max-width-600 mx-auto">
+                "To empower builders, bootstrap agencies, and coding learners to deploy optimized custom software configurations without getting lost in academic jargon."
+            </p>
+        </div>
+        
+        <!-- Journey Timeline -->
+        <div class="row justify-content-center py-4 border-top border-light">
+            <div class="col-lg-8">
+                <h3 class="font-heading fw-bold text-center mb-5">Bobby's Development Journey</h3>
+                
+                <div class="vertical-timeline">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item">
+                        <span class="timeline-dot"></span>
+                        <h5 class="fw-bold font-heading mb-1 text-dark">Began Coding & Database Architecture</h5>
+                        <p class="text-muted small">2018 - Started coding backend scripts in Python and developing database models for micro-SaaS sites.</p>
+                    </div>
+                    
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item">
+                        <span class="timeline-dot"></span>
+                        <h5 class="fw-bold font-heading mb-1 text-dark">Launched Coaching & Education Hub</h5>
+                        <p class="text-muted small">2021 - Launched online bootcamps helping engineers transition into tech stacks (Python, SQL, Django REST framework).</p>
+                    </div>
+
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item">
+                        <span class="timeline-dot"></span>
+                        <h5 class="fw-bold font-heading mb-1 text-dark">YouTube Tutorials & Digital Shop Launch</h5>
+                        <p class="text-muted small">2023 - Began sharing visual backend tutorials on YouTube and launched BobbyTheCoder store templates.</p>
+                    </div>
+                    
+                    <!-- Timeline Item 4 -->
+                    <div class="timeline-item">
+                        <span class="timeline-dot"></span>
+                        <h5 class="fw-bold font-heading mb-1 text-dark">Scale Freelance Agency Model</h5>
+                        <p class="text-muted small">2025 - Partnering with international teams to deliver full-scale Django architectures and portfolio templates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

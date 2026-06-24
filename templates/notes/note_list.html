@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Coding Notes Library | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-graduation-cap"></i> Notes Library</span>
+            <h1 class="font-heading fw-bold display-4">Coding Notes</h1>
+            <p class="text-muted fs-5">Read comprehensive, simple, and clean syntax walkthroughs written by Bobby.</p>
+        </div>
+        
+        <!-- Filters panel -->
+        <div class="card glass-card border-0 p-4 mb-5">
+            <form method="GET" action="{% url 'note_list' %}" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small">Search Keywords</label>
+                    <input type="text" name="search" class="form-control rounded-3" placeholder="e.g. loops, decorators..." value="{{ request.GET.search }}">
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small">Programming Language</label>
+                    <select name="language" class="form-select rounded-3">
+                        <option value="">All Languages</option>
+                        {% for val, name in languages %}
+                            <option value="{{ val }}" {% if selected_language == val %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small">Difficulty</label>
+                    <select name="difficulty" class="form-select rounded-3">
+                        <option value="">All Levels</option>
+                        {% for val, name in difficulties %}
+                            <option value="{{ val }}" {% if selected_difficulty == val %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-premium">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Notes list grid -->
+        <div class="row g-4">
+            {% if notes %}
+                {% for note in notes %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card notebook-card border-0 p-4 h-100">
+                            <div class="d-flex justify-content-between mb-3 align-items-center">
+                                <span class="badge bg-light text-dark text-capitalize">{{ note.get_programming_language_display }}</span>
+                                <span class="text-muted small text-capitalize"><i class="fa-solid fa-signal me-1"></i> {{ note.get_difficulty_display }}</span>
+                            </div>
+                            
+                            <h4 class="font-heading fw-bold mb-3 text-dark">{{ note.title }}</h4>
+                            <p class="text-muted small mb-4 flex-grow-1">{{ note.summary }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="text-muted small"><i class="fa-solid fa-clock me-1"></i> {{ note.created_at|date:"d M, Y" }}</span>
+                                <a href="{% url 'note_detail' note.slug %}" class="btn btn-sm btn-premium">Read Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fa-solid fa-book-open display-4 text-muted mb-3"></i>
+                    <h4 class="fw-bold text-dark">No Notes Found</h4>
+                    <p class="text-muted">No guides found. Try resetting filters.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link border-0 rounded-3 text-dark me-2" href="?page={{ page_obj.previous_page_number }}{% if selected_language %}&language={{ selected_language }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"><i class="fa-solid fa-angle-left"></i></a></li>
+                        {% endif %}
+                        <li class="page-item"><span class="page-link border-0 rounded-3 bg-primary text-white me-2" style="background-color: var(--accent) !important;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link border-0 rounded-3 text-dark" href="?page={{ page_obj.next_page_number }}{% if selected_language %}&language={{ selected_language }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"><i class="fa-solid fa-angle-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

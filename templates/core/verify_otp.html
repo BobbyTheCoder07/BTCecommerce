@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify OTP | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card glass-card border-0 p-5 rounded-4 shadow-lg">
+                    <div class="text-center mb-4">
+                        <span class="badge-premium mb-3"><i class="fa-solid fa-key"></i> Code Verification</span>
+                        <h2 class="font-heading fw-bold">Verify OTP</h2>
+                        <p class="text-muted small">We've sent a 6-digit verification code to <br><strong class="text-dark">{{ user_email }}</strong></p>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4 text-center">
+                            <input type="text" name="otp" class="form-control text-center fs-3 fw-bold py-2 rounded-3 tracking-widest" placeholder="000000" maxlength="6" pattern="\d{6}" required style="letter-spacing: 0.25em;">
+                            <div class="form-text small mt-2">Check the developer server console / log to copy the mock email OTP.</div>
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-premium py-2.5">Verify Account</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted small">Didn't receive the email? <a href="{% url 'resend_otp' user_id %}" class="text-primary fw-semibold text-decoration-none" style="color: var(--accent) !important;">Resend OTP</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

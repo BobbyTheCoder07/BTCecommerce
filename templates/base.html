@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BobbyTheCoder | Learn Coding, Build Projects & Grow{% endblock %}</title>
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="{% block meta_description %}Coding Notes, Interview Questions, Projects, Ebooks and Website Development Services — all in one place.{% endblock %}">
+    <meta name="keywords" content="BobbyTheCoder, Django Developer, Coding Coach, Python Notes, Web Development, Interview Preparation, Coding Projects">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}BobbyTheCoder - Coding Platform & Store{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Learn coding, download premium ebook notes, practice programming questions, and hire expert web development services.{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom Visual Style -->
+    <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="grid-pattern">
+
+    <!-- Global Glowing Accents -->
+    <div class="glow-blob glow-1"></div>
+    <div class="glow-blob glow-2"></div>
+    <div class="glow-blob glow-3"></div>
+
+    <!-- Sticky Glassmorphic Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-navbar py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <span class="fs-4 fw-bold text-dark font-heading">
+                    <span class="text-primary" style="color: var(--accent) !important;">Bobby</span>TheCoder
+                </span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">Ebooks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'learn_home' %}">Learn</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'project_list' %}">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Search Bar Toggle Button -->
+                    <button class="btn btn-link text-dark p-1" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="fa-solid fa-magnifying-glass fs-5"></i>
+                    </button>
+                    
+                    <!-- Shopping Cart Indicator Button -->
+                    <button class="btn btn-link text-dark p-1 position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                        <i class="fa-solid fa-bag-shopping fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartBadgeCount">
+                            {{ cart_total_count }}
+                        </span>
+                    </button>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-premium-outline dropdown-toggle px-3 py-2 fs-7" type="button" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-user me-1"></i> {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-3 mt-2">
+                                <li><a class="dropdown-item py-2 rounded-2" href="{% url 'dashboard_overview' %}"><i class="fa-solid fa-gauge me-2"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item py-2 rounded-2" href="{% url 'dashboard_downloads' %}"><i class="fa-solid fa-download me-2"></i>Downloads</a></li>
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item py-2 rounded-2 text-primary" href="{% url 'admin_analytics' %}"><i class="fa-solid fa-chart-line me-2"></i>Analytics Panel</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 rounded-2 text-danger" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-link text-dark text-decoration-none fw-semibold">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-premium py-2 px-3">Get Started</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Floating Toast Message Alerts -->
+    {% if messages %}
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1200;">
+            {% for message in messages %}
+                <div class="toast show glass-card shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+                    <div class="toast-header border-0 bg-transparent py-2">
+                        <strong class="me-auto text-capitalize font-heading text-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}primary{% endif %}">
+                            <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+                            Notification
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body pt-0 text-dark">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Slide-over E-commerce Cart Drawer -->
+    <div class="offcanvas offcanvas-end glass-card rounded-start-4" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <div class="offcanvas-header border-bottom border-light py-4">
+            <h5 class="offcanvas-title font-heading fw-bold" id="cartOffcanvasLabel"><i class="fa-solid fa-bag-shopping text-primary me-2" style="color: var(--accent) !important;"></i>Your Shopping Cart</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div class="flex-grow-1 overflow-y-auto" id="cartDrawerList">
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <div class="d-flex align-items-center gap-3 border-bottom border-light py-3" id="cart-item-row-{{ item.product.id }}">
+                            <img src="{{ item.product.thumbnail.url }}" alt="{{ item.product.title }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 text-truncate font-heading fw-semibold" style="max-width: 180px;">{{ item.product.title }}</h6>
+                                <p class="text-muted small mb-0">₹{{ item.product.current_price }}</p>
+                            </div>
+                            <button class="btn btn-sm btn-link text-danger p-0" onclick="removeFromCart({{ item.product.id }})">
+                                <i class="fa-regular fa-trash-can fs-6"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-basket-shopping text-muted display-4 mb-3"></i>
+                        <p class="text-muted fw-semibold">Your cart is currently empty.</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-premium-outline btn-sm mt-2">Start Shopping</a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="border-top border-light pt-4 mt-auto">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted fw-semibold">Subtotal</span>
+                    <span class="text-dark fw-bold fs-5" id="cartDrawerSubtotal">₹{{ cart_subtotal }}</span>
+                </div>
+                <p class="text-muted small mb-4">GST (18%) and coupon discounts are calculated at the checkout screen.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'checkout' %}" class="btn btn-premium py-2.5">Proceed to Checkout</a>
+                    <button class="btn btn-premium-outline py-2.5" data-bs-dismiss="offcanvas">Continue Shopping</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal Overlay -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0 p-4">
+                <div class="modal-header border-0 p-0 mb-3 justify-content-between">
+                    <h5 class="modal-title font-heading fw-bold">Search BobbyTheCoder</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <form action="{% url 'product_list' %}" method="GET" class="d-flex gap-2">
+                        <input type="text" name="search" class="form-control rounded-3 py-2" placeholder="Search ebooks, notes, code..." required>
+                        <button type="submit" class="btn btn-premium px-3"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Social Dock -->
+    <div class="social-floating-dock">
+        <a href="https://instagram.com/bobby.thecoder" target="_blank" class="social-dock-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://youtube.com/@BobbyTheCoder" target="_blank" class="social-dock-link" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://github.com" target="_blank" class="social-dock-link" title="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://linkedin.com" target="_blank" class="social-dock-link" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://t.me" target="_blank" class="social-dock-link" title="Telegram"><i class="fa-brands fa-telegram"></i></a>
+        <a href="https://wa.me" target="_blank" class="social-dock-link" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+
+    <!-- Mobile Bottom Navigation Dock -->
+    <div class="mobile-bottom-nav">
+        <a href="{% url 'home' %}" class="mobile-nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'product_list' %}" class="mobile-nav-item">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span>Ebooks</span>
+        </a>
+        <a href="{% url 'learn_home' %}" class="mobile-nav-item">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Learn</span>
+        </a>
+        <a href="{% url 'services' %}" class="mobile-nav-item">
+            <i class="fa-solid fa-laptop-code"></i>
+            <span>Services</span>
+        </a>
+        <a href="{% url 'dashboard_overview' %}" class="mobile-nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Account</span>
+        </a>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="bg-glow-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="border-top border-light mt-5 pt-5 pb-4 bg-white">
+        <div class="container">
+            <div class="row g-4 justify-content-between mb-5">
+                <div class="col-lg-4">
+                    <span class="fs-4 fw-bold text-dark font-heading">
+                        <span class="text-primary" style="color: var(--accent) !important;">Bobby</span>TheCoder
+                    </span>
+                    <p class="text-muted mt-3 mb-4 pe-lg-4">
+                        Premium coding education notes, interview guides, website template packages, and direct Django freelance development services.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://instagram.com/bobby.thecoder" target="_blank" class="btn btn-sm btn-outline-dark rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://youtube.com/@BobbyTheCoder" target="_blank" class="btn btn-sm btn-outline-dark rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" target="_blank" class="btn btn-sm btn-outline-dark rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" target="_blank" class="btn btn-sm btn-outline-dark rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="font-heading fw-bold mb-3 text-uppercase fs-7" style="color: var(--text-dark);">Resources</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'blog_list' %}" class="text-muted text-decoration-none small">Blog Articles</a></li>
+                        <li class="mb-2"><a href="{% url 'about' %}" class="text-muted text-decoration-none small">Founder Profile</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="font-heading fw-bold mb-3 text-uppercase fs-7" style="color: var(--text-dark);">Products & Services</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-muted text-decoration-none small">Ebooks Store</a></li>
+                        <li class="mb-2"><a href="{% url 'product_list' %}?category=templates" class="text-muted text-decoration-none small">Web Templates</a></li>
+                        <li class="mb-2"><a href="{% url 'services' %}" class="text-muted text-decoration-none small">Django Web Development</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <h6 class="font-heading fw-bold mb-3 text-uppercase fs-7" style="color: var(--text-dark);">Weekly Updates</h6>
+                    <p class="text-muted small mb-3">Get updates on new premium ebooks and development service insights direct in your inbox.</p>
+                    <form id="newsletterFooterForm" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="email" name="email" class="form-control rounded-3 py-2 small" placeholder="name@domain.com" required>
+                        <button type="submit" class="btn btn-premium px-3 py-2 small"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                    <div id="newsletterFooterAlert" class="small mt-2" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <hr class="border-light mb-4">
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <p class="text-muted small mb-0">&copy; 2026 BobbyTheCoder. All Rights Reserved.</p>
+                <div class="d-flex gap-3 small">
+                    <a href="#" class="text-muted text-decoration-none">Privacy Policy</a>
+                    <a href="#" class="text-muted text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Core AJAX Logic Script -->
+    <script>
+        // Global AJAX Cart Functions
+        function addToCart(productId) {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "cart_add" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update badge count
+                    document.getElementById('cartBadgeCount').innerText = data.cart_count;
+                    
+                    // Show confirmation Toast / Alert or reload cart sidebar contents
+                    showToast("Success", data.message, "success");
+                    
+                    // Refresh cart drawer list dynamically
+                    reloadCartDrawer();
+                } else {
+                    showToast("Error", data.message, "danger");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast("Error", "Could not complete cart request.", "danger");
+            });
+        }
+
+        function removeFromCart(productId) {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "cart_remove" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('cartBadgeCount').innerText = data.cart_count;
+                    
+                    // Remove product row from drawer
+                    const itemRow = document.getElementById(`cart-item-row-${productId}`);
+                    if (itemRow) itemRow.remove();
+                    
+                    showToast("Success", data.message, "success");
+                    reloadCartDrawer();
+                }
+            });
+        }
+
+        function reloadCartDrawer() {
+            // Fetch updated subtotal and items from backend or reload page section
+            // In this implementation, we reload the window to keep session context or re-request values
+            // Alternatively, a smooth reload is standard. Let's do a quick window location reload for cart updates
+            // if we are on the checkout page to synchronize pricing models instantly.
+            if (window.location.pathname.includes('/checkout/')) {
+                window.location.reload();
+            } else {
+                // Fetch updated context processor output or refresh page dynamically
+                // For simplicity & robustness, reloading updates the page context cleanly.
+                window.location.reload();
+            }
+        }
+
+        // Global Wishlist Toggle function
+        function toggleWishlist(productId, btnElement) {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "wishlist_toggle" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    btnElement.innerHTML = '<i class="fa-solid fa-heart text-danger"></i>';
+                    showToast("Wishlist", data.message, "success");
+                } else if (data.status === 'removed') {
+                    btnElement.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                    showToast("Wishlist", data.message, "success");
+                } else if (data.status === 'login_required') {
+                    window.location.href = "{% url 'login' %}";
+                }
+            });
+        }
+
+        // Global Alert Toast helper
+        function showToast(title, body, tag) {
+            const container = document.querySelector('body');
+            const toastDiv = document.createElement('div');
+            toastDiv.className = `toast show glass-card shadow-lg position-fixed top-0 end-0 m-3`;
+            toastDiv.style.zIndex = 1300;
+            toastDiv.setAttribute('role', 'alert');
+            toastDiv.innerHTML = `
+                <div class="toast-header border-0 bg-transparent py-2">
+                    <strong class="me-auto text-capitalize font-heading text-${tag === 'success' ? 'success' : 'danger'}">
+                        <i class="fa-solid fa-circle-info me-2"></i> ${title}
+                    </strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body pt-0 text-dark">${body}</div>
+            `;
+            container.appendChild(toastDiv);
+            setTimeout(() => {
+                toastDiv.remove();
+            }, 3500);
+        }
+
+        // AJAX Newsletter Form Submission
+        document.getElementById('newsletterFooterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const alertDiv = document.getElementById('newsletterFooterAlert');
+            const formData = new FormData(form);
+
+            fetch('{% url "newsletter_subscribe" %}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                alertDiv.style.display = 'block';
+                alertDiv.innerText = data.message;
+                if (data.status === 'success') {
+                    alertDiv.className = "small mt-2 text-success";
+                    form.reset();
+                } else if (data.status === 'info') {
+                    alertDiv.className = "small mt-2 text-primary";
+                } else {
+                    alertDiv.className = "small mt-2 text-danger";
+                }
+            });
+        });
+
+        // GSAP Scroll Reveal and Micro Interactions
+        document.addEventListener("DOMContentLoaded", function() {
+            gsap.from(".navbar-brand, .nav-item", {
+                duration: 0.8,
+                y: -15,
+                opacity: 0,
+                stagger: 0.05,
+                ease: "power2.out"
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

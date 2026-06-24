@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Developer Projects Portfolio | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 position-relative grid-pattern">
+    <div class="container py-5">
+        <!-- Page Header -->
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-folder-open"></i> Portfolio</span>
+            <h1 class="font-heading fw-bold display-4">Open Source & Client Projects</h1>
+            <p class="text-muted fs-5 max-width-600 mx-auto">Explore clean code implementations, backend system architectures, and production-ready packages built by Bobby.</p>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="row g-4">
+            {% if projects %}
+                {% for project in projects %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card glass-card h-100 overflow-hidden border-0">
+                            <!-- Thumbnail -->
+                            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            
+                            <div class="card-body p-4 d-flex flex-column">
+                                <!-- Tech pills -->
+                                <div class="mb-3">
+                                    {% for tech in project.tech_list %}
+                                        <span class="project-tech-badge me-1 mb-1 small">{{ tech }}</span>
+                                    {% endfor %}
+                                </div>
+                                
+                                <h3 class="font-heading fw-bold text-dark fs-5 mb-2">{{ project.title }}</h3>
+                                <p class="text-muted small mb-4 flex-grow-1">{{ project.short_description }}</p>
+                                
+                                <!-- Action links -->
+                                <div class="d-flex gap-2 mt-auto">
+                                    {% if project.live_url %}
+                                        <a href="{{ project.live_url }}" target="_blank" class="btn btn-premium btn-sm flex-grow-1"><i class="fa-solid fa-globe me-1"></i> View Live</a>
+                                    {% endif %}
+                                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-premium-outline btn-sm flex-grow-1">Case Study</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fa-solid fa-code-fork display-4 text-muted mb-3"></i>
+                    <h4 class="fw-bold">No Projects Uploaded Yet</h4>
+                    <p class="text-muted">Enter the Django Admin panel at `/admin/` and add project records under Projects.</p>
+                    <a href="/admin/projects/project/add/" class="btn btn-premium mt-3">Add Project in Admin</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

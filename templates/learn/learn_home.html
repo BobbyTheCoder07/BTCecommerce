@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Coding Academy | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 position-relative overflow-hidden grid-pattern">
+    <!-- Glowing Blob -->
+    <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10" style="width: 500px; height: 500px; filter: blur(80px); z-index: -1; background-color: var(--accent) !important;"></div>
+
+    <div class="container py-5">
+        <!-- Section Header -->
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-graduation-cap"></i> Bobby's Academy</span>
+            <h1 class="font-heading fw-bold display-4">Start Your Coding Journey</h1>
+            <p class="text-muted fs-5 max-width-600 mx-auto">Choose a language and start learning with visual, bite-sized topics and syntax-highlighted examples.</p>
+        </div>
+
+        <!-- Languages Grid -->
+        <div class="row g-4 justify-content-center">
+            {% if languages %}
+                {% for lang in languages %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card glass-card border-0 p-4 h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-3" style="color: var(--accent) !important;">
+                                    <i class="{{ lang.icon }}"></i>
+                                </div>
+                                <span class="badge bg-dark rounded-pill py-1.5 px-3 fs-8">{{ lang.topic_count }} Topics</span>
+                            </div>
+                            <h3 class="font-heading fw-bold text-dark mb-2">{{ lang.name }}</h3>
+                            <p class="text-muted small mb-4 flex-grow-1">{{ lang.description }}</p>
+                            <a href="{% url 'learn_detail' lang.slug %}" class="btn btn-premium mt-auto w-100 text-center">Start Learning</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-lg-6 text-center py-5">
+                    <i class="fa-solid fa-graduation-cap text-muted display-3 mb-3"></i>
+                    <h4 class="fw-bold">No Languages Seeded Yet</h4>
+                    <p class="text-muted">Access the Django Admin panel at `/admin/` and add entries for Language and Topics.</p>
+                    <a href="/admin/learn/language/add/" class="btn btn-premium mt-3">Add Language in Admin</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

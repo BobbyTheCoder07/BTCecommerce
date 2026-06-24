@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} | Case Study | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 dot-pattern">
+    <div class="container py-4">
+        <!-- Breadcrumb / Go Back -->
+        <div class="mb-4">
+            <a href="{% url 'project_list' %}" class="btn btn-premium-outline btn-sm px-3"><i class="fa-solid fa-arrow-left-long me-2"></i>Back to Portfolio</a>
+        </div>
+
+        <div class="row g-5">
+            <!-- Left Side: Thumbnail & Quick Details -->
+            <div class="col-lg-4">
+                <div class="card glass-card border-0 p-3 shadow-lg rounded-4 mb-4">
+                    <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid rounded-3 mb-3" style="width: 100%; object-fit: cover;">
+                    <h5 class="font-heading fw-bold mb-2 text-dark">{{ project.title }}</h5>
+                    <p class="text-muted small mb-3">{{ project.short_description }}</p>
+                    
+                    <div class="mb-4">
+                        <label class="fw-bold small text-muted text-uppercase d-block mb-2">Technologies Used</label>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for tech in project.tech_list %}
+                                <span class="project-tech-badge small">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if project.live_url %}
+                        <a href="{{ project.live_url }}" target="_blank" class="btn btn-premium w-100"><i class="fa-solid fa-globe me-2"></i>View Live Deployment</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Side: Detailed Write-up / Case Study -->
+            <div class="col-lg-8">
+                <div class="card glass-card border-0 p-5 rounded-4 shadow-md">
+                    <h2 class="font-heading fw-bold text-dark mb-4">Project Case Study & System Walkthrough</h2>
+                    <div class="topic-content-body">
+                        {% if project.description %}
+                            {{ project.description|safe }}
+                        {% else %}
+                            <p class="text-muted">No details have been added for this case study. Admin can edit this using the description HTML field in the Django Admin dashboard.</p>
+                            
+                            <h4>System Overview</h4>
+                            <p>This project is designed to resolve modern scalability bottlenecks. Code structure focuses on separation of concerns, high database optimization queries, and responsive front-end integration.</p>
+                            
+                            <h4>Technical Architecture</h4>
+                            <p>Built with robust programming frameworks. Database schemas support complex relationships and are fully indexed for performance scaling.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<h3 class="font-heading fw-bold mb-4 text-dark"><i class="fa-solid fa-gauge me-2 text-primary" style="color: var(--accent) !important;"></i>Account Overview</h3>
+
+<!-- Stats grid -->
+<div class="row g-3 mb-5">
+    <div class="col-md-3">
+        <div class="card bg-light border-0 p-3 rounded-3 text-center">
+            <h6 class="text-muted small mb-1 text-uppercase">Total Orders</h6>
+            <h3 class="fw-bold text-dark mb-0">{{ orders_count }}</h3>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-light border-0 p-3 rounded-3 text-center">
+            <h6 class="text-muted small mb-1 text-uppercase">Downloads</h6>
+            <h3 class="fw-bold text-dark mb-0">{{ downloads_count }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-light border-0 p-3 rounded-3 text-center">
+            <h6 class="text-muted small mb-1 text-uppercase">Wishlist</h6>
+            <h3 class="fw-bold text-dark mb-0">{{ wishlist_count }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-light border-0 p-3 rounded-3 text-center" style="border-left: 3px solid var(--accent) !important;">
+            <h6 class="text-muted small mb-1 text-uppercase">Total Spending</h6>
+            <h3 class="fw-bold text-dark mb-0">₹{{ total_spending }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<h5 class="font-heading fw-bold mb-3 text-dark">Recent Orders</h5>
+<div class="table-responsive">
+    <table class="table align-middle table-hover mb-0">
+        <thead>
+            <tr class="text-muted fs-7">
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if recent_orders %}
+                {% for order in recent_orders %}
+                    <tr>
+                        <td class="font-heading small fw-bold">{{ order.order_id|slice:":8"|upper }}...</td>
+                        <td class="text-muted small">{{ order.created_at|date:"d M, Y" }}</td>
+                        <td class="fw-semibold small">₹{{ order.grand_total }}</td>
+                        <td>
+                            {% if order.is_paid %}
+                                <span class="badge bg-success bg-opacity-10 text-success text-capitalize">Completed</span>
+                            {% elif order.upi_verification_requested %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning text-capitalize">UPI Verifying</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger text-capitalize">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-muted small">No transactions recorded yet. <a href="{% url 'product_list' %}" class="text-primary text-decoration-none">Go to Shop</a></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

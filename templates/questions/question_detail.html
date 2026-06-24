@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ question.title }} - Problem Solver | BobbyTheCoder{% endblock %}
+
+{% block extra_css %}
+<!-- Prism Syntax Highlighting Themes -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+    .solution-hide-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(13, 17, 23, 0.95);
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        z-index: 5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-4">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'question_list' %}" class="text-decoration-none text-muted">Coding Board</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ question.title }}</li>
+            </ol>
+        </nav>
+        
+        <div class="row g-5">
+            <!-- Left Side: Problem Statement & Explanations -->
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 rounded-4 shadow-sm mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {% if question.difficulty == 'beginner' %}
+                            <span class="badge bg-success bg-opacity-10 text-success">Beginner</span>
+                        {% elif question.difficulty == 'intermediate' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning">Intermediate</span>
+                        {% else %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Advanced</span>
+                        {% endif %}
+                        <span class="badge bg-dark text-capitalize">{{ question.get_category_display }}</span>
+                    </div>
+                    
+                    <h2 class="font-heading fw-bold text-dark mb-4">{{ question.title }}</h2>
+                    
+                    <h5 class="fw-bold font-heading text-dark mb-2">Problem Statement</h5>
+                    <p class="text-muted leading-relaxed small mb-4">{{ question.problem_statement|linebreaks }}</p>
+                    
+                    <h5 class="fw-bold font-heading text-dark mb-2">Explanation & Logic</h5>
+                    <p class="text-muted leading-relaxed small mb-0">{{ question.explanation|linebreaks }}</p>
+                </div>
+            </div>
+            
+            <!-- Right Side: Solution Viewer Code Window -->
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <!-- Overlay to prompt showing solution -->
+                    <div class="solution-hide-overlay" id="solutionOverlay">
+                        <i class="fa-solid fa-lock text-warning display-6 mb-3"></i>
+                        <h5 class="font-heading fw-bold text-white mb-2">Solution is Locked</h5>
+                        <p class="text-muted small mb-4 text-center px-4">Think first! Read the problem statement on the left, then click reveal.</p>
+                        <button class="btn btn-premium px-4" onclick="revealSolution()">Reveal Solution Code</button>
+                    </div>
+
+                    <!-- Code editor window -->
+                    <div class="code-window text-start shadow-lg">
+                        <div class="code-header">
+                            <span class="dot-btn dot-close"></span>
+                            <span class="dot-btn dot-minimize"></span>
+                            <span class="dot-btn dot-maximize"></span>
+                            <span class="ms-3 text-muted small">solution.py</span>
+                        </div>
+                        <div class="code-body p-0">
+                            <pre class="m-0"><code class="language-python">{{ question.solution_code }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sample Console Output -->
+                {% if question.sample_output %}
+                    <div class="card bg-dark text-light border-0 p-4 rounded-4 mt-4 shadow-sm" id="outputCard" style="display: none;">
+                        <h6 class="font-heading fw-bold mb-2 text-warning"><i class="fa-solid fa-terminal me-2"></i>Console Output</h6>
+                        <pre class="mb-0 text-muted small" style="font-family: 'Courier New', Courier, monospace;">{{ question.sample_output }}</pre>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Prism JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+    function revealSolution() {
+        // Hide overlay with a smooth fade
+        const overlay = document.getElementById('solutionOverlay');
+        overlay.style.transition = 'all 0.5s ease-out';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // Show console output card if present
+            const outCard = document.getElementById('outputCard');
+            if (outCard) {
+                outCard.style.display = 'block';
+                gsap.from(outCard, { duration: 0.5, y: 15, opacity: 0, ease: "power2.out" });
+            }
+        }, 500);
+    }
+</script>
+{% endblock %}

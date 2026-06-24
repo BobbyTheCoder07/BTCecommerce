@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ active_topic.title }} | {{ language.name }} Academy | BobbyTheCoder{% endblock %}
+
+{% block extra_css %}
+<!-- Prism.js Tomorrow Theme for premium syntax highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<style>
+    /* Styling adjustments for split screen sidebar */
+    .learn-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .learn-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 122, 0, 0.15);
+        border-radius: 6px;
+    }
+    .learn-sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+    }
+    .content-fade-in {
+        animation: fadeIn 0.4s ease forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 position-relative dot-pattern">
+    <div class="container py-4">
+        <!-- Breadcrumb / Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-light pb-3">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'learn_home' %}" class="btn btn-premium-outline btn-sm px-3"><i class="fa-solid fa-arrow-left-long me-2"></i>Back to Academy</a>
+                <h4 class="font-heading fw-bold text-dark mb-0"><i class="{{ language.icon }} text-primary me-2" style="color: var(--accent) !important;"></i>{{ language.name }} Mastery</h4>
+            </div>
+            <span class="badge bg-success bg-opacity-10 text-success py-1.5 px-3 rounded-pill"><i class="fa-solid fa-circle-check me-1"></i> Interactive course</span>
+        </div>
+
+        <div class="learn-layout">
+            <!-- LEFT SIDE: Sticky Sidebar -->
+            <aside class="learn-sidebar">
+                <h6 class="font-heading fw-bold small text-uppercase text-muted mb-3 px-2">Course Index</h6>
+                <div class="topic-list-group">
+                    {% if topics %}
+                        {% for topic in topics %}
+                            <a href="{% url 'topic_detail' language.slug topic.slug %}" 
+                               class="topic-sidebar-link {% if active_topic.slug == topic.slug %}active{% endif %}" 
+                               data-slug="{{ topic.slug }}" 
+                               onclick="loadTopicAjax(event, '{{ language.slug }}', '{{ topic.slug }}')">
+                                <span>{{ forloop.counter }}. {{ topic.title }}</span>
+                                <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted small px-2">No topics uploaded for this language.</p>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <!-- RIGHT SIDE: Lesson Content Panel -->
+            <main class="learn-content-card border border-light" id="lessonContentPanel">
+                {% if active_topic %}
+                    <div id="topicRenderBlock" class="content-fade-in">
+                        <!-- Top Metadata -->
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 border-bottom border-light pb-3">
+                            <h2 class="font-heading fw-bold text-dark mb-0" id="topicTitle">{{ active_topic.title }}</h2>
+                            <span class="badge-premium small text-capitalize" id="topicDifficulty">
+                                <i class="fa-solid fa-shield"></i> {{ active_topic.get_difficulty_display }}
+                            </span>
+                        </div>
+
+                        <!-- Main Rich HTML Content Area (safe rendering for CKEditor output) -->
+                        <div class="topic-content-body font-body" id="topicContent">
+                            {{ active_topic.content|safe }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-book-open text-muted display-3 mb-3"></i>
+                        <h4 class="fw-bold">No Content Selected</h4>
+                        <p class="text-muted">Choose a topic from the left sidebar to start studying.</p>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Prism JS dependencies for dynamic styling of code blocks -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+    // AJAX Topic Switching Function
+    function loadTopicAjax(event, langSlug, topicSlug) {
+        event.preventDefault(); // Stop page refresh
+
+        const sidebarLinks = document.querySelectorAll('.topic-sidebar-link');
+        const activeLink = document.querySelector(`.topic-sidebar-link[data-slug="${topicSlug}"]`);
+        
+        // Update active class immediately on navigation links
+        sidebarLinks.forEach(link => link.classList.remove('active'));
+        if (activeLink) activeLink.classList.add('active');
+
+        // Fetch URL route with AJAX parameter
+        const fetchUrl = `/learn/${langSlug}/${topicSlug}/?ajax=true`;
+
+        fetch(fetchUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Topic could not be loaded.');
+            return response.json();
+        })
+        .then(data => {
+            // Swap out title, difficulty & content dynamically
+            document.getElementById('topicTitle').innerText = data.title;
+            document.getElementById('topicDifficulty').innerHTML = `<i class="fa-solid fa-shield"></i> ${data.difficulty}`;
+            
+            // Swap main content body
+            const contentContainer = document.getElementById('topicContent');
+            contentContainer.innerHTML = data.content;
+            
+            // Trigger Fade animation
+            const renderBlock = document.getElementById('topicRenderBlock');
+            renderBlock.classList.remove('content-fade-in');
+            void renderBlock.offsetWidth; // Trigger DOM reflow to restart animation
+            renderBlock.classList.add('content-fade-in');
+
+            // Re-highlight syntax code blocks dynamically loaded via AJAX
+            Prism.highlightAll();
+
+            // Update browser URL query path using pushState
+            const newUrl = `/learn/${langSlug}/${topicSlug}/`;
+            history.pushState({ lang: langSlug, topic: topicSlug }, data.title, newUrl);
+            document.title = `${data.title} | ${langSlug.toUpperCase()} Academy | BobbyTheCoder`;
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Something went wrong. Please check your connection.');
+        });
+    }
+
+    // Handle back/forward history clicks smoothly
+    window.onpopstate = function(e) {
+        if(e.state) {
+            window.location.reload(); // Quick reload matches simple state synchronization
+        }
+    };
+</script>
+{% endblock %}

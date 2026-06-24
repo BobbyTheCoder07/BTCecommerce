@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Freelance Web Development Services | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 dot-pattern">
+    <div class="container py-5">
+        <!-- Section Header -->
+        <div class="text-center mb-5">
+            <span class="badge-premium mb-2"><i class="fa-solid fa-laptop-code"></i> Professional Agency</span>
+            <h1 class="font-heading fw-bold display-4">Freelance Services I Offer</h1>
+            <p class="text-muted fs-5 max-width-600 mx-auto">Hire Bobby to design, code, and deploy fast, responsive, and secure custom web platforms for your business.</p>
+        </div>
+        
+        <!-- Dynamic Services Grid -->
+        <div class="row g-4 mb-5 justify-content-center">
+            {% if services %}
+                {% for service in services %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card glass-card border-0 p-4 h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-4" style="color: var(--accent) !important;">
+                                    <i class="{{ service.icon }}"></i>
+                                </div>
+                                <span class="badge bg-light text-dark fw-bold">Active package</span>
+                            </div>
+                            <h3 class="font-heading fw-bold mb-2 text-dark fs-5">{{ service.title }}</h3>
+                            <p class="text-muted small mb-4 flex-grow-1">{{ service.description }}</p>
+                            
+                            <div class="mt-auto border-top border-light pt-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small d-block">Starting from</span>
+                                    <span class="fw-bold text-dark fs-5">{{ service.starting_price }}</span>
+                                </div>
+                                <a href="{% url 'contact' %}?service={{ service.title|urlencode }}" class="btn btn-premium py-2 px-3 small">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback packages if no database entries seeded yet -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card glass-card border-0 p-4 h-100">
+                        <i class="fa-solid fa-code display-6 text-primary mb-3" style="color: var(--accent) !important;"></i>
+                        <h3 class="font-heading fw-bold mb-2">Website Development</h3>
+                        <p class="text-muted small mb-4">Responsive business landing pages, portfolio sites, and marketing websites optimized for speed and SEO rankings.</p>
+                        <div class="mt-auto border-top border-light pt-3 d-flex justify-content-between align-items-center">
+                            <div><span class="text-muted small d-block">Starting from</span><span class="fw-bold text-dark fs-5">₹15,000</span></div>
+                            <a href="{% url 'contact' %}?service=website" class="btn btn-premium py-2 px-3 small">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card glass-card border-0 p-4 h-100">
+                        <i class="fa-brands fa-python display-6 text-success mb-3"></i>
+                        <h3 class="font-heading fw-bold mb-2">Django Backend Development</h3>
+                        <p class="text-muted small mb-4">Secure database schema design, REST APIs, custom dashboards, Celery task pipelines, and third-party API configurations.</p>
+                        <div class="mt-auto border-top border-light pt-3 d-flex justify-content-between align-items-center">
+                            <div><span class="text-muted small d-block">Starting from</span><span class="fw-bold text-dark fs-5">₹25,000</span></div>
+                            <a href="{% url 'contact' %}?service=django" class="btn btn-premium py-2 px-3 small">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card glass-card border-0 p-4 h-100">
+                        <i class="fa-solid fa-cart-shopping display-6 text-info mb-3"></i>
+                        <h3 class="font-heading fw-bold mb-2">E-commerce Stores</h3>
+                        <p class="text-muted small mb-4">Complete online store blueprints featuring Razorpay payment flows, checkout systems, order lists, and promo discounts.</p>
+                        <div class="mt-auto border-top border-light pt-3 d-flex justify-content-between align-items-center">
+                            <div><span class="text-muted small d-block">Starting from</span><span class="fw-bold text-dark fs-5">₹35,000</span></div>
+                            <a href="{% url 'contact' %}?service=ecommerce" class="btn btn-premium py-2 px-3 small">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SaaS Process Timeline Section -->
+        <div class="py-5 border-top border-light my-5">
+            <div class="text-center mb-5">
+                <span class="badge-premium mb-2"><i class="fa-solid fa-arrows-spin"></i> Roadmap</span>
+                <h2 class="font-heading fw-bold">Development Process</h2>
+                <p class="text-muted">A clear, phased approach to shipping code from concept to production.</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="vertical-timeline">
+                        <div class="timeline-item">
+                            <span class="timeline-dot"></span>
+                            <h5 class="font-heading fw-bold text-dark mb-2">Phase 1: Discovery & Scope</h5>
+                            <p class="text-muted small mb-0">We outline target users, UI inspiration, specifications, tech stacks, and budget milestones to produce a detailed project brief.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-dot"></span>
+                            <h5 class="font-heading fw-bold text-dark mb-2">Phase 2: Database Schema & Wireframes</h5>
+                            <p class="text-muted small mb-0">I create high-fidelity UI visual wireframes and design clean relational database architectures (Django Models / SQL scripts).</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-dot"></span>
+                            <h5 class="font-heading fw-bold text-dark mb-2">Phase 3: Clean Coding & Pytest Runs</h5>
+                            <p class="text-muted small mb-0">Coding responsive frontends and secure API paths. All modules are validated through robust unit testing frameworks to guarantee reliability.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-dot"></span>
+                            <h5 class="font-heading fw-bold text-dark mb-2">Phase 4: Deployment, SSL & Handoff</h5>
+                            <p class="text-muted small mb-0">I launch the app on secure virtual private servers (AWS/DigitalOcean/Hetzner), attach domain SSL certificates, and hand over source code repository rights.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQs Accordion -->
+        <div class="row justify-content-center pt-4">
+            <div class="col-lg-8">
+                <h3 class="font-heading fw-bold text-center mb-4 text-dark">Frequently Asked Questions</h3>
+                <div class="accordion accordion-flush glass-card border-0 p-3 shadow-sm" id="servicesAccordion">
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold font-heading bg-transparent text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                What technologies do you use for backend development?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                            <div class="accordion-body text-muted small">
+                                I specialize in Django, Python, SQLite/PostgreSQL databases, Docker containers, Celery workers, and Stripe or Razorpay checkout APIs.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold font-heading bg-transparent text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                How long does a standard website build take?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                            <div class="accordion-body text-muted small">
+                                Simple landing pages and portfolio sites are delivered within 1-2 weeks. Complicated Django custom web portals and E-commerce templates require about 3-5 weeks.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold font-heading bg-transparent text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                Do you provide maintenance post-launch?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#servicesAccordion">
+                            <div class="accordion-body text-muted small">
+                                Yes, every freelance package includes 30 days of free support and bug debugging, with optional monthly hosting retention packages available.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact CTA Section -->
+        <div class="card glass-card border-0 p-5 rounded-4 shadow-md text-center mt-5">
+            <h3 class="font-heading fw-bold mb-3 text-dark">Have a Unique Project Requirement?</h3>
+            <p class="text-muted small mb-4 max-width-600 mx-auto">Get in touch with Bobby directly to discuss database blueprints, customized features, pricing, or custom contract integrations.</p>
+            <a href="{% url 'contact' %}" class="btn btn-premium px-4"><i class="fa-solid fa-envelope me-2"></i>Inquire About Project</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

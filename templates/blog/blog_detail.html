@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} | BobbyTheCoder Blog{% endblock %}
+
+{% block extra_css %}
+<!-- Prism Syntax Highlighting Themes -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+    .blog-content-body pre {
+        background: #1e1e1e !important;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-4">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'blog_list' %}" class="text-decoration-none text-muted">Blog</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ post.title }}</li>
+            </ol>
+        </nav>
+        
+        <div class="row g-5">
+            <!-- Left Side: Article Body -->
+            <div class="col-lg-8">
+                <div class="card glass-card border-0 p-5 rounded-4 shadow-sm mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                        <span class="badge bg-dark text-capitalize px-3 py-2 fs-7">{{ post.get_category_display }}</span>
+                        <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> Posted on {{ post.created_at|date:"M d, Y" }}</span>
+                        <span class="text-muted small"><i class="fa-solid fa-eye me-1"></i> {{ post.views }} reads</span>
+                    </div>
+                    
+                    <h1 class="font-heading fw-bold display-5 mb-4 text-dark">{{ post.title }}</h1>
+                    
+                    <!-- Cover image -->
+                    <div class="mb-5 rounded-4 overflow-hidden shadow-sm">
+                        <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="img-fluid w-100" style="max-height: 400px; object-fit: cover;">
+                    </div>
+                    
+                    <!-- Markdown Content parsing targets -->
+                    <div class="blog-content-body text-dark" id="blogMarkdownBody" style="display: none;">{{ post.content_markdown }}</div>
+                    <div class="blog-rendered-output text-dark leading-relaxed fs-6" id="blogRenderedOutput"></div>
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="card glass-card border-0 p-4 rounded-4 shadow-sm">
+                    <h4 class="font-heading fw-bold text-dark mb-4">Discussion</h4>
+                    
+                    <!-- Comment Input Form -->
+                    <div class="mb-4">
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'add_comment' post.slug %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <textarea name="text" class="form-control rounded-3" rows="3" placeholder="Add to the discussion..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-premium btn-sm">Post Comment</button>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-secondary rounded-3 py-2.5 small">
+                                <a href="{% url 'login' %}?next={{ request.path }}" class="text-primary fw-bold text-decoration-none">Sign In</a> to post a comment.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div class="d-flex flex-column gap-3">
+                        {% if comments %}
+                            {% for comment in comments %}
+                                <div class="border-bottom border-light pb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="font-heading fw-bold mb-0 text-dark small">{{ comment.user.username }}</h6>
+                                        <span class="text-muted small fs-8">{{ comment.created_at|date:"M d, H:i" }}</span>
+                                    </div>
+                                    <p class="text-muted small mb-0">{{ comment.text }}</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small">No comments posted yet. Start the conversation!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Sidebar suggestions -->
+            <div class="col-lg-4">
+                {% if related_posts %}
+                    <div class="card glass-card border-0 p-4 shadow-sm sticky-top" style="top: 100px; z-index: 10;">
+                        <h5 class="font-heading fw-bold text-dark mb-4">Related Articles</h5>
+                        <div class="d-flex flex-column gap-3">
+                            {% for rp in related_posts %}
+                                <div class="d-flex gap-3 align-items-center">
+                                    <img src="{{ rp.thumbnail.url }}" alt="{{ rp.title }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <div>
+                                        <h6 class="font-heading fw-bold text-dark mb-1 small text-truncate-2" style="max-width: 180px;">
+                                            <a href="{% url 'blog_detail' rp.slug %}" class="text-dark text-decoration-none">{{ rp.title }}</a>
+                                        </h6>
+                                        <span class="text-muted small fs-8">{{ rp.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Marked JS -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- Prism JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const markdownSource = document.getElementById("blogMarkdownBody").innerText;
+        const parsedHTML = marked.parse(markdownSource);
+        document.getElementById("blogRenderedOutput").innerHTML = parsedHTML;
+        Prism.highlightAll();
+    });
+</script>
+{% endblock %}
