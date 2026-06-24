@@ -12,9 +12,9 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+SECRET_KEY = 'django-insecure-bobby-secret-key-production-and-local-safe-value'
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
