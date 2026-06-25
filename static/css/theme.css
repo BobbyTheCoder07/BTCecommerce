@@ -251,7 +251,6 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(1.1);
 }
 
-/* Mobile Bottom Navigation Bar */
 .mobile-bottom-nav {
     display: none;
     position: fixed;
@@ -262,13 +261,14 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 100%;
     margin: 0;
     padding: 0 10px;
+    padding-bottom: env(safe-area-inset-bottom);
     box-sizing: border-box;
-    height: 64px;
-    background: rgba(255, 255, 255, 0.85);
+    height: calc(64px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-color);
-    z-index: 1040;
+    z-index: 10000;
     justify-content: space-around;
     align-items: center;
     overflow: hidden;
@@ -581,5 +581,22 @@ h1, h2, h3, h4, h5, h6 {
     padding: 4px 10px;
     border-radius: 6px;
     border: 1px solid rgba(255, 122, 0, 0.1);
+}
+
+/* Mobile Hero Avatar and Stats Custom Styling */
+@media (max-width: 576px) {
+    .hero-portrait-container {
+        max-width: 92% !important;
+        margin-top: 15px;
+    }
+    .hero-portrait-container img {
+        transform: scale(1.06);
+        transform-origin: bottom center;
+    }
+    /* Reposition stats box on small mobile screens to keep it beautifully visible */
+    .hero-portrait-container .card.glass-card.position-absolute.start-50 {
+        bottom: -35px !important;
+        width: 95% !important;
+    }
 }
 

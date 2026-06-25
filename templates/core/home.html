@@ -35,7 +35,7 @@
                         <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 640px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3; -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 98%); mask-image: linear-gradient(to bottom, black 80%, transparent 98%);">
                         
                         <!-- Floating Glassmorphic Code Card -->
-                        <div class="card glass-card border-0 p-3 shadow-lg rounded-3 text-start position-absolute floating-element" style="width: 220px; bottom: 40px; left: -20px; z-index: 4; transform: rotate(-3deg);">
+                        <div class="card glass-card border-0 p-3 shadow-lg rounded-3 text-start position-absolute floating-element d-none d-lg-block" style="width: 220px; bottom: 40px; left: -20px; z-index: 4; transform: rotate(-3deg);">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="rounded-circle bg-success" style="width: 8px; height: 8px; display: inline-block;"></span>
                                 <span class="text-muted fs-8 font-monospace">bobby_coach.py</span>
@@ -48,7 +48,7 @@
                         </div>
                         
                         <!-- Floating Stats Badge -->
-                        <div class="card glass-card border-0 px-3 py-2 shadow-lg rounded-pill text-center position-absolute floating-element" style="top: 80px; right: -15px; z-index: 4; transform: rotate(2deg);">
+                        <div class="card glass-card border-0 px-3 py-2 shadow-lg rounded-pill text-center position-absolute floating-element d-none d-lg-block" style="top: 80px; right: -15px; z-index: 4; transform: rotate(2deg);">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fa-solid fa-rocket fs-4 text-primary" style="color: var(--accent) !important;"></i>
                                 <div class="text-start">
@@ -56,6 +56,8 @@
                                     <p class="text-muted mb-0 fs-9 leading-tight">Across Platforms</p>
                                 </div>
                             </div>
+                        </div>
+                        
                         <!-- Integrated Stats Box covering the bottom cutout edge -->
                         <div class="card glass-card border-0 shadow-lg px-4 py-3 position-absolute start-50 translate-middle-x" style="width: 90%; max-width: 400px; bottom: -25px; z-index: 10; border-radius: 20px !important; backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 122, 0, 0.2) !important; box-shadow: 0 15px 35px rgba(255, 122, 0, 0.15) !important;">
                             <div class="row align-items-center text-center g-0">

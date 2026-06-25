@@ -212,24 +212,11 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             
             if user is not None:
-                if not user.is_verified:
-                    # Resend OTP
-                    otp = user.generate_otp()
-                    send_mail(
-                        'Verify your BobbyTheCoder Account',
-                        f'Please verify your account.\n\nYour OTP is: {otp}\nIt expires in 10 minutes.',
-                        'no-reply@bobbythecoder.in',
-                        [user.email],
-                        fail_silently=True
-                    )
-                    messages.warning(request, "Your account is not verified yet. We have sent a new OTP to your email.")
-                    return redirect('verify_otp', user_id=user.id)
-                else:
-                    login(request, user)
-                    messages.success(request, f"Welcome back, {user.username}!")
-                    if user.is_staff:
-                        return redirect('btc_dashboard')
-                    return redirect('dashboard_overview')
+                login(request, user)
+                messages.success(request, f"Welcome back, {user.username}!")
+                if user.is_staff:
+                    return redirect('btc_dashboard')
+                return redirect('dashboard_overview')
             else:
                 messages.error(request, "Invalid username/email or password.")
     else:
