@@ -92,6 +92,10 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--accent) !important;
 }
 
+.btn {
+    white-space: nowrap !important;
+}
+
 /* Custom Buttons */
 .btn-premium {
     background: var(--accent);
