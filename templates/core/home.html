@@ -3,9 +3,9 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="py-5 position-relative overflow-hidden grid-pattern border-bottom border-light">
+<section class="pt-3 pb-5 position-relative overflow-hidden grid-pattern border-bottom border-light">
     
-    <div class="container py-5">
+    <div class="container pt-2 pb-5">
         <div class="row align-items-center g-5">
             <!-- Left Side: Copywriting & CTAs -->
             <div class="col-lg-6">
@@ -31,8 +31,8 @@
                     <div class="position-absolute top-50 start-50 translate-middle rounded-circle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(255, 122, 0, 0.12) 0%, rgba(255,122,0,0) 70%); filter: blur(60px); z-index: 1;"></div>
                     
                     <div class="hero-portrait-container position-relative mx-auto" style="max-width: 440px; z-index: 2;">
-                        <!-- Main Cutout Portrait of Bobby -->
-                        <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 560px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3;">
+                        <!-- Main Cutout Portrait of Bobby with Smooth Bottom Transparency Fade Mask -->
+                        <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 560px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3; -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 98%); mask-image: linear-gradient(to bottom, black 80%, transparent 98%);">
                         
                         <!-- Floating Glassmorphic Code Card -->
                         <div class="card glass-card border-0 p-3 shadow-lg rounded-3 text-start position-absolute floating-element" style="width: 220px; bottom: 40px; left: -20px; z-index: 4; transform: rotate(-3deg);">
