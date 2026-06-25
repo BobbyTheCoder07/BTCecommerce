@@ -56,23 +56,36 @@
                                     <p class="text-muted mb-0 fs-9 leading-tight">Across Platforms</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Stats Box below the image -->
-                    <div class="card glass-card border-0 shadow-lg px-4 py-3 mx-auto mt-4 position-relative" style="max-width: 420px; z-index: 5; border-radius: 16px !important;">
-                        <div class="row align-items-center text-center g-2">
-                            <div class="col-4 border-end border-light">
-                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_ebooks }}</h5>
-                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Total Ebooks</span>
-                            </div>
-                            <div class="col-4 border-end border-light">
-                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_projects }}</h5>
-                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Projects</span>
-                            </div>
-                            <div class="col-4">
-                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_languages }}</h5>
-                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Languages</span>
+                        <!-- Integrated Stats Box covering the bottom cutout edge -->
+                        <div class="card glass-card border-0 shadow-lg px-4 py-3 position-absolute start-50 translate-middle-x" style="width: 90%; max-width: 400px; bottom: -25px; z-index: 10; border-radius: 20px !important; backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 122, 0, 0.2) !important; box-shadow: 0 15px 35px rgba(255, 122, 0, 0.15) !important;">
+                            <div class="row align-items-center text-center g-0">
+                                <div class="col-4 border-end border-light-subtle">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="stat-icon-wrapper mb-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(255, 122, 0, 0.08); border-radius: 50%;">
+                                            <i class="fa-solid fa-book-open-reader fs-6" style="color: var(--accent);"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;">{{ total_ebooks }}</h5>
+                                        <span class="text-muted text-uppercase fw-bold" style="font-size: 0.6rem; letter-spacing: 0.06em; display: block;">Total Ebooks</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 border-end border-light-subtle">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="stat-icon-wrapper mb-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(255, 122, 0, 0.08); border-radius: 50%;">
+                                            <i class="fa-solid fa-laptop-code fs-6" style="color: var(--accent);"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;">{{ total_projects }}</h5>
+                                        <span class="text-muted text-uppercase fw-bold" style="font-size: 0.6rem; letter-spacing: 0.06em; display: block;">Projects</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="stat-icon-wrapper mb-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(255, 122, 0, 0.08); border-radius: 50%;">
+                                            <i class="fa-solid fa-code fs-6" style="color: var(--accent);"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;">{{ total_languages }}</h5>
+                                        <span class="text-muted text-uppercase fw-bold" style="font-size: 0.6rem; letter-spacing: 0.06em; display: block;">Languages</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
