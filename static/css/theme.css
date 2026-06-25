@@ -21,11 +21,18 @@
     --transition-premium: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: var(--bg-primary);
     color: var(--text-dark);
     font-family: var(--font-body);
-    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -251,13 +258,20 @@ h1, h2, h3, h4, h5, h6 {
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
     height: 64px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-color);
     z-index: 1040;
     justify-content: space-around;
     align-items: center;
+    overflow: hidden;
 }
 
 @media (max-width: 768px) {

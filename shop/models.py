@@ -120,6 +120,21 @@ class Order(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def razorpay_fee(self):
+        # 2% fee + 18% GST of fee = 2.36% of grand_total
+        from decimal import Decimal
+        if self.is_paid:
+            return self.grand_total * Decimal('0.0236')
+        return Decimal('0.00')
+
+    @property
+    def net_profit(self):
+        from decimal import Decimal
+        if self.is_paid:
+            return self.grand_total - self.razorpay_fee
+        return Decimal('0.00')
+
     def __str__(self):
         return f"Order {self.order_id} by {self.user.username}"
 

@@ -227,7 +227,9 @@ def login_view(request):
                 else:
                     login(request, user)
                     messages.success(request, f"Welcome back, {user.username}!")
-                    return redirect('home')
+                    if user.is_staff:
+                        return redirect('btc_dashboard')
+                    return redirect('dashboard_overview')
             else:
                 messages.error(request, "Invalid username/email or password.")
     else:

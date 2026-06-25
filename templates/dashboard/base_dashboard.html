@@ -31,7 +31,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'dashboard_downloads' %}" class="nav-link py-2 px-3 rounded-3 text-dark text-decoration-none {% if request.resolver_match.url_name == 'dashboard_downloads' %}active bg-light{% endif %}">
-                                <i class="fa-solid fa-download me-2"></i> Downloads
+                                <i class="fa-solid fa-bag-shopping me-2"></i> My Purchases
                             </a>
                         </li>
                         <li class="nav-item">
@@ -46,14 +46,19 @@
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'dashboard_profile' %}" class="nav-link py-2 px-3 rounded-3 text-dark text-decoration-none {% if request.resolver_match.url_name == 'dashboard_profile' %}active bg-light{% endif %}">
-                                <i class="fa-solid fa-user-gear me-2"></i> Profile
+                                <i class="fa-solid fa-user me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'dashboard_settings' %}" class="nav-link py-2 px-3 rounded-3 text-dark text-decoration-none {% if request.resolver_match.url_name == 'dashboard_settings' %}active bg-light{% endif %}">
+                                <i class="fa-solid fa-sliders me-2"></i> Settings
                             </a>
                         </li>
                         
                         {% if user.is_staff %}
                             <li class="nav-item border-top border-light mt-3 pt-3">
-                                <a href="{% url 'admin_analytics' %}" class="nav-link py-2 px-3 rounded-3 text-primary text-decoration-none fw-semibold">
-                                    <i class="fa-solid fa-chart-line me-2"></i> Analytics Room
+                                <a href="{% url 'btc_dashboard' %}" class="nav-link py-2 px-3 rounded-3 text-primary text-decoration-none fw-semibold">
+                                    <i class="fa-solid fa-chart-line me-2"></i> BTC Admin Dashboard
                                 </a>
                             </li>
                         {% endif %}

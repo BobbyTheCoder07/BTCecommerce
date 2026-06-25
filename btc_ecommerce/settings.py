@@ -139,9 +139,12 @@ RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET', default='dummy_secret')
 UPI_ID = env('UPI_ID', default='bobbythecoder@upi')
 UPI_MERCHANT_NAME = env('UPI_MERCHANT_NAME', default='BobbyTheCoder')
 
-# Email configuration (Brevo SMTP config)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-if EMAIL_HOST_USER:
+# Email configuration (Brevo API config)
+BREVO_API_KEY = env('BREVO_API_KEY', default='')
+
+if BREVO_API_KEY:
+    EMAIL_BACKEND = 'core.email_backend.BrevoEmailBackend'
+elif env('EMAIL_HOST_USER', default=''):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = env('EMAIL_HOST', default='smtp-relay.brevo.com')
     EMAIL_PORT = env.int('EMAIL_PORT', default=587)

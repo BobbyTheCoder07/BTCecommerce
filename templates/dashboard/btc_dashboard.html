@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}BTC Admin Control Room | BobbyTheCoder{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light bg-opacity-25 dot-pattern">
+    <div class="container py-4">
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+            <div>
+                <span class="badge-premium mb-2"><i class="fa-solid fa-screwdriver-wrench"></i> Administrative Control Room</span>
+                <h1 class="font-heading fw-bold display-5 mb-0">BTC Business Dashboard</h1>
+                <p class="text-muted small mb-0">Live revenue tracking, digital asset analytics, coupon controls, and system models overview.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'dashboard_overview' %}" class="btn btn-premium-outline"><i class="fa-solid fa-gauge me-2"></i>User Panel</a>
+                <a href="/admin/" target="_blank" class="btn btn-premium"><i class="fa-solid fa-user-shield me-2"></i>Django Admin</a>
+            </div>
+        </div>
+
+        <!-- 1. Money Tracking Row -->
+        <div class="row g-4 mb-5 text-center">
+            <div class="col-md-4">
+                <div class="card glass-card border-0 p-4 shadow-sm" style="border-top: 4px solid #FF7A00 !important; background: linear-gradient(135deg, rgba(255, 122, 0, 0.03) 0%, #ffffff 100%) !important;">
+                    <h6 class="text-muted small text-uppercase mb-2"><i class="fa-solid fa-wallet text-warning me-2"></i>Gross Sales Revenue</h6>
+                    <h2 class="font-heading fw-bold text-dark mb-1">₹{{ gross_revenue|floatformat:2 }}</h2>
+                    <span class="text-muted fs-9">Total user checkout transactions paid</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card border-0 p-4 shadow-sm" style="border-top: 4px solid #dc3545 !important; background: linear-gradient(135deg, rgba(220, 53, 69, 0.03) 0%, #ffffff 100%) !important;">
+                    <h6 class="text-muted small text-uppercase mb-2"><i class="fa-brands fa-cc-stripe text-danger me-2"></i>Razorpay Fees (Deducted)</h6>
+                    <h2 class="font-heading fw-bold text-danger mb-1">- ₹{{ total_commission_deducted|floatformat:2 }}</h2>
+                    <span class="text-muted fs-9">2% commission + 18% GST of fee (2.36% total)</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card border-0 p-4 shadow-sm" style="border-top: 4px solid #28a745 !important; background: linear-gradient(135deg, rgba(40, 167, 69, 0.03) 0%, #ffffff 100%) !important;">
+                    <h6 class="text-muted small text-uppercase mb-2"><i class="fa-solid fa-circle-check text-success me-2"></i>Net Owner Earnings</h6>
+                    <h2 class="font-heading fw-bold text-success mb-1">₹{{ net_revenue|floatformat:2 }}</h2>
+                    <span class="text-muted fs-9">Realized profit credited to bank account</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100">
+                    <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-chart-line text-primary me-2"></i>Daily Sales Trends</h5>
+                    <canvas id="dailySalesChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100">
+                    <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-chart-bar text-primary me-2"></i>Monthly Revenue Analytics</h5>
+                    <canvas id="monthlySalesChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. System Database Models Registry -->
+        <div class="card glass-card border-0 p-4 shadow-sm mb-5">
+            <h4 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-database text-primary me-2"></i>System Database Records Overview</h4>
+            <div class="row g-3">
+                {% for model in model_stats %}
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a href="{{ model.url }}" target="_blank" class="card bg-light border-0 p-3 text-center text-decoration-none h-100 d-flex flex-column justify-content-center hover-up transition-premium" style="border-radius: 12px;">
+                            <h3 class="fw-bold text-dark mb-0">{{ model.count }}</h3>
+                            <span class="text-muted fs-9 fw-semibold text-uppercase mt-1 d-block">{{ model.name }}</span>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pending Manual UPI Approvals -->
+        <div class="card glass-card border-0 p-4 shadow-sm mb-5" style="border-left: 4px solid var(--accent) !important;">
+            <h4 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-qrcode text-success me-2"></i>Pending Offline UPI Verifications</h4>
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead>
+                        <tr class="text-muted fs-7">
+                            <th>User</th>
+                            <th>Order ID</th>
+                            <th>Grand Total</th>
+                            <th>UTR Reference Number</th>
+                            <th>Submitted Date</th>
+                            <th class="text-end">Verification Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pending_upi_orders %}
+                            {% for ord in pending_upi_orders %}
+                                <tr>
+                                    <td class="small fw-bold text-dark">{{ ord.user.username }}</td>
+                                    <td class="small text-muted" title="{{ ord.order_id }}">{{ ord.order_id|slice:":12"|upper }}...</td>
+                                    <td class="small fw-bold text-dark">₹{{ ord.grand_total }}</td>
+                                    <td class="small fw-bold text-primary font-heading">{{ ord.upi_utr }}</td>
+                                    <td class="small text-muted">{{ ord.created_at|date:"d M, Y H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'admin_approve_upi' ord.id %}?next=btc_dashboard" class="btn btn-sm btn-success px-3 py-1.5 fs-8"><i class="fa-regular fa-circle-check me-1"></i> Approve Payment</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted small">No pending UPI manual verifications requested. Everything is clean!</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Product & Blog Analytics Tables -->
+        <div class="row g-4 mb-5">
+            <!-- Digital Asset Analytics (Ebooks) -->
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100">
+                    <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-book-bookmark text-primary me-2"></i>Ebook & Asset Sales Analytics</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead>
+                                <tr class="text-muted fs-8 text-uppercase">
+                                    <th>Asset Title</th>
+                                    <th class="text-center">Units</th>
+                                    <th>Gross</th>
+                                    <th>Comm. (RP)</th>
+                                    <th>Net Income</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if products_analytics %}
+                                    {% for pa in products_analytics %}
+                                        <tr>
+                                            <td class="small fw-semibold text-dark text-truncate" style="max-width: 150px;">{{ pa.title }}</td>
+                                            <td class="small text-center fw-bold">{{ pa.units_sold }}</td>
+                                            <td class="small fw-bold text-dark">₹{{ pa.gross|floatformat:2 }}</td>
+                                            <td class="small text-muted">₹{{ pa.commission|floatformat:2 }}</td>
+                                            <td class="small fw-bold text-success">₹{{ pa.net|floatformat:2 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">No ebook sales statistics found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Pageview Analytics -->
+            <div class="col-lg-6">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100">
+                    <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-eye text-primary me-2"></i>Blog Post Engagement & Views</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead>
+                                <tr class="text-muted fs-8 text-uppercase">
+                                    <th>Post Title</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Views</th>
+                                    <th class="text-center">Comments</th>
+                                    <th>Published</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if blog_analytics %}
+                                    {% for ba in blog_analytics %}
+                                        <tr>
+                                            <td class="small fw-semibold text-dark text-truncate" style="max-width: 150px;">{{ ba.title }}</td>
+                                            <td class="small text-muted">{{ ba.category }}</td>
+                                            <td class="small text-center fw-bold"><i class="fa-solid fa-eye text-muted me-1"></i>{{ ba.views }}</td>
+                                            <td class="small text-center text-primary fw-bold"><i class="fa-solid fa-comments text-muted me-1"></i>{{ ba.comments_count }}</td>
+                                            <td class="small text-muted">{{ ba.created_at|date:"d M, Y" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">No blog engagement statistics found.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Coupon Code Controller Section -->
+        <div class="row g-4 mb-5">
+            <!-- Inline Coupon Generator Form -->
+            <div class="col-lg-4">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100" style="border-left: 4px solid var(--accent) !important;">
+                    <h5 class="font-heading fw-bold text-dark mb-3"><i class="fa-solid fa-plus-circle text-primary me-2"></i>Create Coupon Code</h5>
+                    <p class="text-muted small mb-4">Generate new active discount vouchers for checkout promotion.</p>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="create_coupon" value="true">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark">Coupon Code</label>
+                            <input type="text" name="code" class="form-control py-2 rounded-3 text-uppercase font-heading fw-bold" required placeholder="e.g. GET50">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold small text-dark">Discount (%)</label>
+                                <input type="number" name="discount_percentage" class="form-control py-2 rounded-3" min="1" max="100" placeholder="e.g. 10">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold small text-dark">Flat (₹)</label>
+                                <input type="number" name="discount_flat" class="form-control py-2 rounded-3" min="1" placeholder="e.g. 150">
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold small text-dark">Usage Limit</label>
+                                <input type="number" name="usage_limit" class="form-control py-2 rounded-3" min="1" placeholder="e.g. 100">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold small text-dark">Expiry Date</label>
+                                <input type="date" name="expiry_date" class="form-control py-2 rounded-3">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-premium w-100 mt-2">Generate Voucher</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Coupon Code Inventory -->
+            <div class="col-lg-8">
+                <div class="card glass-card border-0 p-4 shadow-sm h-100">
+                    <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-ticket text-primary me-2"></i>Active Promotional Vouchers</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead>
+                                <tr class="text-muted fs-8 text-uppercase">
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Usage</th>
+                                    <th>Expiry</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if coupons %}
+                                    {% for cp in coupons %}
+                                        <tr>
+                                            <td><span class="badge bg-primary bg-opacity-10 text-primary font-heading fw-bold px-3 py-1.5 fs-8 text-uppercase">{{ cp.code }}</span></td>
+                                            <td class="small fw-bold">
+                                                {% if cp.discount_percentage %}
+                                                    {{ cp.discount_percentage }}% Off
+                                                {% elif cp.discount_flat %}
+                                                    ₹{{ cp.discount_flat }} Off
+                                                {% else %}
+                                                    Free
+                                                {% endif %}
+                                            </td>
+                                            <td class="small text-muted">{{ cp.used_count }} {% if cp.usage_limit %}/ {{ cp.usage_limit }}{% endif %} used</td>
+                                            <td class="small text-muted">{% if cp.expiry_date %}{{ cp.expiry_date }}{% else %}No Expiry{% endif %}</td>
+                                            <td>
+                                                {% if cp.is_active %}
+                                                    <span class="badge bg-success bg-opacity-10 text-success fs-9 px-2.5 py-1">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger fs-9 px-2.5 py-1">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted small">No promotional coupons configured yet. Generate one to start!</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Recent Transaction History -->
+        <div class="card glass-card border-0 p-4 shadow-sm">
+            <h5 class="font-heading fw-bold text-dark mb-4"><i class="fa-solid fa-list-check text-primary me-2"></i>Recent System Orders logs</h5>
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead>
+                        <tr class="text-muted fs-7">
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Gross Total</th>
+                            <th>Deduction</th>
+                            <th>Net Profit</th>
+                            <th>Gateway</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_orders %}
+                            {% for ord in recent_orders %}
+                                <tr>
+                                    <td class="small fw-bold text-dark">{{ ord.user.username }}</td>
+                                    <td class="small text-muted">{{ ord.created_at|date:"d M, H:i" }}</td>
+                                    <td class="small fw-bold text-dark">₹{{ ord.grand_total }}</td>
+                                    <td class="small text-muted">
+                                        - ₹{{ ord.razorpay_fee|floatformat:2 }}
+                                    </td>
+                                    <td class="small fw-bold text-success">
+                                        ₹{{ ord.net_profit|floatformat:2 }}
+                                    </td>
+                                    <td class="small text-muted">
+                                        {% if ord.razorpay_payment_id %}
+                                            Razorpay
+                                        {% elif ord.upi_utr %}
+                                            UPI Manual
+                                        {% else %}
+                                            None
+                                        |   {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if ord.is_paid %}
+                                            <span class="badge bg-success bg-opacity-10 text-success text-capitalize">Paid</span>
+                                        {% elif ord.upi_verification_requested %}
+                                            <span class="badge bg-warning bg-opacity-10 text-warning text-capitalize">Verifying</span>
+                                        {% else %}
+                                            <span class="badge bg-danger bg-opacity-10 text-danger text-capitalize">Unpaid</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted small">No transactions found.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dailyLabels = JSON.parse('{{ daily_labels_json|safe }}');
+        const dailyValues = JSON.parse('{{ daily_values_json|safe }}');
+        
+        const monthlyLabels = JSON.parse('{{ monthly_labels_json|safe }}');
+        const monthlyValues = JSON.parse('{{ monthly_values_json|safe }}');
+
+        // Daily line chart
+        const ctxDaily = document.getElementById('dailySalesChart').getContext('2d');
+        new Chart(ctxDaily, {
+            type: 'line',
+            data: {
+                labels: dailyLabels.length ? dailyLabels : ['Jun 20', 'Jun 21', 'Jun 22', 'Jun 23', 'Jun 24'],
+                datasets: [{
+                    label: 'Gross Sales (₹)',
+                    data: dailyValues.length ? dailyValues : [12000, 15000, 9000, 24000, 18000],
+                    borderColor: '#FF7A00',
+                    backgroundColor: 'rgba(255, 122, 0, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Monthly bar chart
+        const ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(ctxMonthly, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels.length ? monthlyLabels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Gross (₹)',
+                    data: monthlyValues.length ? monthlyValues : [45000, 60000, 52000, 75000, 90000, 115000],
+                    backgroundColor: '#FFA94D',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
