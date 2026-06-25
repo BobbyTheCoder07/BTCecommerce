@@ -4,8 +4,6 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="py-5 position-relative overflow-hidden grid-pattern border-bottom border-light">
-    <!-- Glowing Accent -->
-    <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10" style="width: 500px; height: 500px; filter: blur(80px); z-index: -1; background-color: var(--accent) !important;"></div>
     
     <div class="container py-5">
         <div class="row align-items-center g-5">
@@ -26,38 +24,40 @@
                 </div>
             </div>
             
-            <!-- Right Side: Interactive Mockup Illustration -->
-            <div class="col-lg-6 text-center">
-                <div class="position-relative d-inline-block">
-                    <!-- Dynamic Product Card Mockup -->
-                    {% if flagship_product %}
-                        <div class="card glass-card border-0 p-3 shadow-lg rounded-4 text-start floating-element" style="max-width: 380px; transform: rotate(1deg);">
-                            <img src="{{ flagship_product.thumbnail.url }}" alt="{{ flagship_product.title }}" class="img-fluid rounded-3 mb-3" style="max-height: 240px; object-fit: cover; width: 100%;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="font-heading fw-bold mb-0 text-dark">{{ flagship_product.title }}</h6>
-                                    <span class="text-muted small">Digital Guide</span>
+            <!-- Right Side: Professional Portrait & Floating Elements -->
+            <div class="col-lg-6">
+                <div class="position-relative d-inline-block w-100 text-center">
+                    <!-- Soft ambient background glow -->
+                    <div class="position-absolute top-50 start-50 translate-middle rounded-circle" style="width: 320px; height: 320px; background: radial-gradient(circle, rgba(255, 122, 0, 0.12) 0%, rgba(255,122,0,0) 70%); filter: blur(50px); z-index: 1;"></div>
+                    
+                    <div class="hero-portrait-container position-relative mx-auto" style="max-width: 350px; z-index: 2;">
+                        <!-- Main Cutout Portrait of Bobby -->
+                        <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 440px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3;">
+                        
+                        <!-- Floating Glassmorphic Code Card -->
+                        <div class="card glass-card border-0 p-3 shadow-lg rounded-3 text-start position-absolute floating-element" style="width: 220px; bottom: 30px; left: -30px; z-index: 4; transform: rotate(-3deg);">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="rounded-circle bg-success" style="width: 8px; height: 8px; display: inline-block;"></span>
+                                <span class="text-muted fs-8 font-monospace">bobby_coach.py</span>
+                            </div>
+                            <p class="font-monospace text-dark mb-0 fs-8" style="line-height: 1.4;">
+                                <span style="color: #FF7A00;">class</span> <span class="fw-bold">Bobby</span>:<br>
+                                &nbsp;&nbsp;role = <span class="text-success">"Developer"</span><br>
+                                &nbsp;&nbsp;focus = <span class="text-success">"Fullstack"</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Floating Stats Badge -->
+                        <div class="card glass-card border-0 px-3 py-2 shadow-lg rounded-pill text-center position-absolute floating-element" style="top: 60px; right: -25px; z-index: 4; transform: rotate(2deg);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-4">🚀</span>
+                                <div class="text-start">
+                                    <p class="fw-bold text-dark mb-0 fs-8 leading-tight">12K+ Students</p>
+                                    <p class="text-muted mb-0 fs-9 leading-tight">Across Platforms</p>
                                 </div>
-                                <span class="badge bg-dark rounded-3 px-2 py-1 fs-8">Flagship</span>
                             </div>
                         </div>
-                    {% else %}
-                        <!-- Fallback code snippet mockup -->
-                        <div class="code-window text-start shadow-lg rounded-4 p-0 floating-element" style="width: 100%; max-width: 440px;">
-                            <div class="code-header">
-                                <span class="dot-btn dot-close"></span>
-                                <span class="dot-btn dot-minimize"></span>
-                                <span class="dot-btn dot-maximize"></span>
-                                <span class="ms-2 text-muted small font-monospace">academy.py</span>
-                            </div>
-                            <div class="code-body font-monospace p-4">
-                                <span style="color: #F8F8F2;">def</span> <span style="color: #50FA7B;">build_success</span>(skills):<br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;code = [s.study() for s in skills]<br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;return <span style="color: #F1FA8C;">"Build Real Projects!"</span><br><br>
-                                <span style="color: #6272A4;"># Join BobbyTheCoder today</span>
-                            </div>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
