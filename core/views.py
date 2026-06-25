@@ -33,6 +33,11 @@ class HomeView(TemplateView):
         context['projects'] = Project.objects.all()[:3]
         context['testimonials'] = Testimonial.objects.filter(is_active=True)
         context['languages'] = Language.objects.filter(is_active=True).annotate(topic_count=Count('topics'))[:3]
+        
+        # Total counts for stats badge
+        context['total_ebooks'] = Product.objects.count()
+        context['total_projects'] = Project.objects.count()
+        context['total_languages'] = Language.objects.count()
         return context
 
 

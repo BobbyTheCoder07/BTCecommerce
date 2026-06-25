@@ -30,9 +30,9 @@
                     <!-- Soft ambient background glow -->
                     <div class="position-absolute top-50 start-50 translate-middle rounded-circle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(255, 122, 0, 0.12) 0%, rgba(255,122,0,0) 70%); filter: blur(60px); z-index: 1;"></div>
                     
-                    <div class="hero-portrait-container position-relative mx-auto" style="max-width: 440px; z-index: 2;">
+                    <div class="hero-portrait-container position-relative mx-auto" style="max-width: 480px; z-index: 2;">
                         <!-- Main Cutout Portrait of Bobby with Smooth Bottom Transparency Fade Mask -->
-                        <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 560px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3; -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 98%); mask-image: linear-gradient(to bottom, black 80%, transparent 98%);">
+                        <img src="{% static 'img/bobby_cutout.png' %}" alt="BobbyTheCoder" class="img-fluid position-relative" style="max-height: 640px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12)); z-index: 3; -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 98%); mask-image: linear-gradient(to bottom, black 80%, transparent 98%);">
                         
                         <!-- Floating Glassmorphic Code Card -->
                         <div class="card glass-card border-0 p-3 shadow-lg rounded-3 text-start position-absolute floating-element" style="width: 220px; bottom: 40px; left: -20px; z-index: 4; transform: rotate(-3deg);">
@@ -55,6 +55,24 @@
                                     <p class="fw-bold text-dark mb-0 fs-8 leading-tight">12K+ Students</p>
                                     <p class="text-muted mb-0 fs-9 leading-tight">Across Platforms</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Box below the image -->
+                    <div class="card glass-card border-0 shadow-lg px-4 py-3 mx-auto mt-4 position-relative" style="max-width: 420px; z-index: 5; border-radius: 16px !important;">
+                        <div class="row align-items-center text-center g-2">
+                            <div class="col-4 border-end border-light">
+                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_ebooks }}</h5>
+                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Total Ebooks</span>
+                            </div>
+                            <div class="col-4 border-end border-light">
+                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_projects }}</h5>
+                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Projects</span>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="fw-bold mb-0 text-primary" style="color: var(--accent) !important;">{{ total_languages }}</h5>
+                                <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em; display: block;">Languages</span>
                             </div>
                         </div>
                     </div>
