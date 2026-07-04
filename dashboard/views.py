@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Avg
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.conf import settings
 import json
 
 from shop.models import Order, OrderItem, Wishlist, Coupon, Product, Category, Review
@@ -173,7 +174,7 @@ def admin_approve_upi(request, order_id):
         send_mail(
             f"Payment Verified: Order {order.order_id}",
             f"Hi {order.user.username},\n\nWe have manually verified your UPI transaction (UTR: {order.upi_utr}). Your payment of ₹{order.grand_total} has been confirmed. You can now download your digital products from the User Dashboard.",
-            'no-reply@bobbythecoder.in',
+            settings.DEFAULT_FROM_EMAIL,
             [order.user.email],
             fail_silently=True
         )

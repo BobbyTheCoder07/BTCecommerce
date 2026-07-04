@@ -355,7 +355,7 @@ def payment_callback(request):
             send_mail(
                 f"Order Confirmed: {order.order_id}",
                 f"Hi {order.user.username},\n\nYour payment of ₹{order.grand_total} has been verified successfully. You can download your products in your User Dashboard.",
-                'no-reply@bobbythecoder.in',
+                settings.DEFAULT_FROM_EMAIL,
                 [order.user.email],
                 fail_silently=True
             )
@@ -393,7 +393,7 @@ def upi_verify_view(request):
         send_mail(
             "New UPI Payment Verification Pending",
             f"User {request.user.username} has submitted a manual UPI payment of ₹{order.grand_total}.\nOrder ID: {order.order_id}\nUTR Number: {utr}\nPlease verify this transaction in your Admin Dashboard.",
-            'no-reply@bobbythecoder.in',
+            settings.DEFAULT_FROM_EMAIL,
             ['bobby@bobbythecoder.in'],
             fail_silently=True
         )

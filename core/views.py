@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db import IntegrityError
+from django.conf import settings
 
 from django.db.models import Count
 from .models import NewsletterSubscriber, ContactMessage, Service, Testimonial
@@ -77,7 +78,7 @@ class ContactView(TemplateView):
             send_mail(
                 f"Contact Inquiry: {form.cleaned_data['subject']}",
                 f"From: {form.cleaned_data['name']} ({form.cleaned_data['email']})\n\n{form.cleaned_data['message']}",
-                'no-reply@bobbythecoder.in',
+                settings.DEFAULT_FROM_EMAIL,
                 ['bobby@bobbythecoder.in'],
                 fail_silently=True
             )
@@ -112,7 +113,7 @@ def newsletter_subscribe(request):
             send_mail(
                 'Subscribed to BobbyTheCoder',
                 'Thank you for subscribing to BobbyTheCoder! You will receive free coding notes and exclusive resources every week.',
-                'no-reply@bobbythecoder.in',
+                settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=True
             )
@@ -142,7 +143,7 @@ def signup_view(request):
             send_mail(
                 'Verify your BobbyTheCoder Account',
                 f'Welcome, {user.username}!\n\nYour OTP for account verification is: {otp}\nIt expires in 10 minutes.',
-                'no-reply@bobbythecoder.in',
+                settings.DEFAULT_FROM_EMAIL,
                 [user.email],
                 fail_silently=True
             )
@@ -180,7 +181,7 @@ def resend_otp_view(request, user_id):
     send_mail(
         'Verify your BobbyTheCoder Account',
         f'Your new OTP for account verification is: {otp}\nIt expires in 10 minutes.',
-        'no-reply@bobbythecoder.in',
+        settings.DEFAULT_FROM_EMAIL,
         [user.email],
         fail_silently=True
     )
@@ -240,7 +241,7 @@ def forgot_password_view(request):
             send_mail(
                 'Password Reset Link (Demo)',
                 f'Hi {user.username},\n\nThis is a mock password reset link. In a real environment, you would receive a tokens link.',
-                'no-reply@bobbythecoder.in',
+                settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=True
             )
