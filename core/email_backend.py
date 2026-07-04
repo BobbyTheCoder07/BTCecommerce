@@ -1,6 +1,7 @@
 from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
 import urllib.request
+import urllib.error
 import json
 
 class BrevoEmailBackend(BaseEmailBackend):
@@ -68,6 +69,9 @@ class BrevoEmailBackend(BaseEmailBackend):
                 with urllib.request.urlopen(req) as response:
                     response.read().decode('utf-8')
                     num_sent += 1
+            except urllib.error.HTTPError as e:
+                error_body = e.read().decode('utf-8')
+                print(f"Failed to send email via Brevo API (HTTPError {e.code}): {error_body}")
             except Exception as e:
                 print(f"Failed to send email via Brevo API: {e}")
                 
