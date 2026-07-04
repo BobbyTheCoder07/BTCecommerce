@@ -34,11 +34,14 @@
                                 <p class="text-muted small mb-4 flex-grow-1">{{ project.short_description }}</p>
                                 
                                 <!-- Action links -->
-                                <div class="d-flex gap-2 mt-auto">
+                                <div class="d-flex gap-2 mt-auto flex-wrap">
                                     {% if project.live_url %}
-                                        <a href="{{ project.live_url }}" target="_blank" class="btn btn-premium btn-sm flex-grow-1"><i class="fa-solid fa-globe me-1"></i> View Live</a>
+                                        <a href="{{ project.live_url }}" target="_blank" class="btn btn-premium btn-sm flex-grow-1"><i class="fa-solid fa-globe me-1"></i> Live</a>
                                     {% endif %}
-                                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-premium-outline btn-sm flex-grow-1">Case Study</a>
+                                    {% if project.github_url %}
+                                        <a href="{{ project.github_url }}" target="_blank" class="btn btn-premium-outline btn-sm flex-grow-1"><i class="fa-brands fa-github me-1"></i> Code</a>
+                                    {% endif %}
+                                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-premium-outline btn-sm flex-grow-1">Overview</a>
                                 </div>
                             </div>
                         </div>

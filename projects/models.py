@@ -9,6 +9,7 @@ class Project(models.Model):
     short_description = models.TextField()
     description = models.TextField(blank=True, null=True, help_text="Full detail case study content. Supports HTML.")
     live_url = models.URLField(blank=True, null=True, help_text="Link to live hosted website.")
+    github_url = models.URLField(blank=True, null=True, help_text="Link to GitHub repository / source code.")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
