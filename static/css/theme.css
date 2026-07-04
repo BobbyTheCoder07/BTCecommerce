@@ -33,6 +33,7 @@ body {
     background-color: var(--bg-primary);
     color: var(--text-dark);
     font-family: var(--font-body);
+    padding-top: 80px; /* Offset for fixed header */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -77,10 +78,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Premium Navbar */
 .sticky-navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1050;
-    background: rgba(255, 255, 255, 0.8);
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1030; /* Stays below modals/canvas overlays (1040+) but above page contents */
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
@@ -279,6 +283,7 @@ h1, h2, h3, h4, h5, h6 {
         display: flex;
     }
     body {
+        padding-top: 76px !important;
         padding-bottom: 70px; /* Add padding so content is not hidden behind the dock */
     }
 }
