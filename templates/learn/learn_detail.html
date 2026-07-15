@@ -47,13 +47,24 @@
                 <div class="topic-list-group">
                     {% if topics %}
                         {% for topic in topics %}
-                            <a href="{% url 'topic_detail' language.slug topic.slug %}" 
-                               class="topic-sidebar-link {% if active_topic.slug == topic.slug %}active{% endif %}" 
-                               data-slug="{{ topic.slug }}" 
-                               onclick="loadTopicAjax(event, '{{ language.slug }}', '{{ topic.slug }}')">
-                                <span>{{ forloop.counter }}. {{ topic.title }}</span>
-                                <i class="fa-solid fa-chevron-right small opacity-50"></i>
-                            </a>
+                            <div class="topic-item-wrapper mb-2">
+                                <a href="{% url 'topic_detail' language.slug topic.slug %}" 
+                                   class="topic-sidebar-link {% if active_topic.slug == topic.slug %}active{% endif %}" 
+                                   data-slug="{{ topic.slug }}" 
+                                   onclick="loadTopicAjax(event, '{{ language.slug }}', '{{ topic.slug }}')">
+                                    <span>{{ forloop.counter }}. {{ topic.title }}</span>
+                                    <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                                </a>
+                                {% if topic.subtopics.all %}
+                                    <div class="subtopic-sidebar-group ps-3 mt-1 {% if active_topic.slug != topic.slug %}d-none{% endif %}" id="subtopics-list-{{ topic.slug }}">
+                                        {% for subtopic in topic.subtopics.all %}
+                                            <a href="#subtopic-{{ subtopic.id }}" class="d-block py-1 text-decoration-none text-muted small hover-text-primary">
+                                                <i class="fa-solid fa-circle-dot me-2 text-primary" style="font-size: 8px; color: var(--accent) !important;"></i>{{ subtopic.title }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         {% endfor %}
                     {% else %}
                         <p class="text-muted small px-2">No topics uploaded for this language.</p>
@@ -73,9 +84,31 @@
                             </span>
                         </div>
 
+                        <!-- Topic Description (if exists) -->
+                        <div id="topicDescriptionContainer" class="mb-4" style="{% if not active_topic.description %}display: none;{% endif %}">
+                            <div id="topicDescription" class="p-3 bg-light rounded-3 border-start border-primary border-3 text-muted fst-italic">
+                                {{ active_topic.description|safe }}
+                            </div>
+                        </div>
+
                         <!-- Main Rich HTML Content Area (safe rendering for CKEditor output) -->
-                        <div class="topic-content-body font-body" id="topicContent">
+                        <div class="topic-content-body font-body mb-5" id="topicContent">
                             {{ active_topic.content|safe }}
+                        </div>
+
+                        <!-- Subtopics Section -->
+                        <div id="subtopicsContainer" class="mt-5" style="{% if not active_topic.subtopics.all %}display: none;{% endif %}">
+                            <h3 class="font-heading fw-bold text-dark mb-4 pb-2 border-bottom"><i class="fa-solid fa-layer-group me-2 text-primary" style="color: var(--accent) !important;"></i>Subtopics</h3>
+                            <div id="subtopicsList" class="d-flex flex-column gap-4">
+                                {% for sub in active_topic.subtopics.all %}
+                                    <div class="subtopic-card card border-0 bg-light p-4 rounded-4 shadow-sm" id="subtopic-{{ sub.id }}">
+                                        <h4 class="font-heading fw-semibold text-dark mb-3"><i class="fa-solid fa-hashtag me-2 text-primary" style="color: var(--accent) !important;"></i>{{ sub.title }}</h4>
+                                        <div class="subtopic-content font-body">
+                                            {{ sub.content|safe }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 {% else %}
@@ -125,9 +158,47 @@
             document.getElementById('topicTitle').innerText = data.title;
             document.getElementById('topicDifficulty').innerHTML = `<i class="fa-solid fa-shield"></i> ${data.difficulty}`;
             
+            // Swap description
+            const descContainer = document.getElementById('topicDescriptionContainer');
+            const descBody = document.getElementById('topicDescription');
+            if (data.description) {
+                descBody.innerHTML = data.description;
+                descContainer.style.display = '';
+            } else {
+                descContainer.style.display = 'none';
+            }
+
             // Swap main content body
             const contentContainer = document.getElementById('topicContent');
             contentContainer.innerHTML = data.content;
+
+            // Swap subtopics
+            const subContainer = document.getElementById('subtopicsContainer');
+            const subList = document.getElementById('subtopicsList');
+            subList.innerHTML = '';
+            if (data.subtopics && data.subtopics.length > 0) {
+                data.subtopics.forEach(sub => {
+                    const card = document.createElement('div');
+                    card.className = 'subtopic-card card border-0 bg-light p-4 rounded-4 shadow-sm';
+                    card.innerHTML = `
+                        <h4 class="font-heading fw-semibold text-dark mb-3"><i class="fa-solid fa-hashtag me-2 text-primary" style="color: var(--accent) !important;"></i>${sub.title}</h4>
+                        <div class="subtopic-content font-body">
+                            ${sub.content}
+                        </div>
+                    `;
+                    subList.appendChild(card);
+                });
+                subContainer.style.display = '';
+            } else {
+                subContainer.style.display = 'none';
+            }
+
+            // Toggle subtopic sidebar visibility
+            document.querySelectorAll('.subtopic-sidebar-group').forEach(el => el.classList.add('d-none'));
+            const activeSubList = document.getElementById(`subtopics-list-${topicSlug}`);
+            if (activeSubList) {
+                activeSubList.classList.remove('d-none');
+            }
             
             // Trigger Fade animation
             const renderBlock = document.getElementById('topicRenderBlock');

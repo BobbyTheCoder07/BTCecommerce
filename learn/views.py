@@ -31,11 +31,21 @@ def learn_detail_view(request, lang_slug, topic_slug=None):
         if not active_topic:
             return JsonResponse({'error': 'No content available'}, status=404)
         
+        subtopics_list = []
+        if active_topic:
+            for sub in active_topic.subtopics.all():
+                subtopics_list.append({
+                    'title': sub.title,
+                    'content': sub.content,
+                })
+        
         return JsonResponse({
             'title': active_topic.title,
             'difficulty': active_topic.get_difficulty_display(),
+            'description': active_topic.description,
             'content': active_topic.content,
-            'order': active_topic.order
+            'order': active_topic.order,
+            'subtopics': subtopics_list
         })
 
     # Standard context context

@@ -41,9 +41,16 @@
                     <h1 class="font-heading fw-bold display-5 mb-4 text-dark">{{ note.title }}</h1>
                     <p class="text-muted leading-relaxed fs-6 mb-5 border-start border-primary border-4 ps-3 py-1">{{ note.summary }}</p>
                     
-                    <!-- Markdown content target body -->
-                    <div class="notes-content-body text-dark" id="notesMarkdownBody" style="display: none;">{{ note.content_markdown }}</div>
-                    <div class="notes-rendered-output text-dark leading-relaxed fs-6" id="notesRenderedOutput"></div>
+                    <!-- Dynamic content rendering based on content_type -->
+                    {% if note.content_type == 'html' %}
+                        <div class="notes-rendered-output text-dark leading-relaxed fs-6">
+                            {{ note.content_html|safe }}
+                        </div>
+                    {% else %}
+                        <!-- Markdown content target body -->
+                        <div class="notes-content-body text-dark" id="notesMarkdownBody" style="display: none;">{{ note.content_markdown }}</div>
+                        <div class="notes-rendered-output text-dark leading-relaxed fs-6" id="notesRenderedOutput"></div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -80,11 +87,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const markdownSource = document.getElementById("notesMarkdownBody").innerText;
-        
-        // Parse markdown on frontend client side
-        const parsedHTML = marked.parse(markdownSource);
-        document.getElementById("notesRenderedOutput").innerHTML = parsedHTML;
+        const markdownContainer = document.getElementById("notesMarkdownBody");
+        if (markdownContainer) {
+            const markdownSource = markdownContainer.innerText;
+            // Parse markdown on frontend client side
+            const parsedHTML = marked.parse(markdownSource);
+            document.getElementById("notesRenderedOutput").innerHTML = parsedHTML;
+        }
         
         // Trigger syntax highlight rendering
         Prism.highlightAll();

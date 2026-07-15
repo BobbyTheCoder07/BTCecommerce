@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'dashboard',
     'learn',
     'projects',
+    'notes',
+    'questions',
 ]
 
 MIDDLEWARE = [
