@@ -116,6 +116,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+# WhiteNoise: serve static files from STATICFILES_DIRS via Django finders.
+# This ensures CSS/JS/images load even if collectstatic doesn't populate STATIC_ROOT.
+WHITENOISE_USE_FINDERS = True
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
