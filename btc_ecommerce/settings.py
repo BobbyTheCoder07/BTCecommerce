@@ -23,8 +23,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
     'cloudinary',
     
     # Custom Apps
@@ -181,8 +181,4 @@ else:
             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
-
-# Compatibility shim: django-cloudinary-storage reads this deprecated attribute
-# during collectstatic. Without it, collectstatic crashes on Django 5.0.
-STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
 
