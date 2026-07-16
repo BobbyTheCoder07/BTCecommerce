@@ -57,12 +57,22 @@ class Topic(models.Model):
 
 
 class SubTopic(models.Model):
+    CONTENT_TYPE_CHOICES = [
+        ('editor', 'Rich HTML Editor (CKEditor)'),
+        ('code', 'Raw HTML Code'),
+    ]
+
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='subtopics')
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
-    content = models.TextField(
-        help_text="SubTopic content in HTML. Supports CKEditor rich editing and code blocks."
+    content_type = models.CharField(
+        max_length=15, 
+        choices=CONTENT_TYPE_CHOICES, 
+        default='editor',
+        help_text="Choose 'Rich HTML Editor' for normal text editing, or 'Raw HTML Code' to paste raw HTML."
     )
+    content = models.TextField(blank=True, default="", help_text="SubTopic content in Rich HTML. Used if Rich HTML Editor is selected.")
+    content_code = models.TextField(blank=True, default="", help_text="SubTopic content in Raw HTML. Used if Raw HTML Code is selected.")
     order = models.PositiveIntegerField(default=0, help_text="Display order within the parent topic")
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -34,9 +34,10 @@ def learn_detail_view(request, lang_slug, topic_slug=None):
         subtopics_list = []
         if active_topic:
             for sub in active_topic.subtopics.all():
+                sub_content = sub.content_code if sub.content_type == 'code' else sub.content
                 subtopics_list.append({
                     'title': sub.title,
-                    'content': sub.content,
+                    'content': sub_content,
                 })
         
         topic_content = active_topic.content_code if active_topic.content_type == 'code' else active_topic.content

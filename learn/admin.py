@@ -6,12 +6,13 @@ class SubTopicInline(admin.StackedInline):
     model = SubTopic
     extra = 0
     prepopulated_fields = {'slug': ('title',)}
-    fields = ('title', 'slug', 'content', 'order')
+    fields = ('title', 'slug', 'content_type', 'content', 'content_code', 'order')
 
     class Media:
         js = (
             'https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js',
             'js/admin_ckeditor.js',
+            'js/admin_learn_toggle.js',
         )
 
 
@@ -35,13 +36,15 @@ class TopicAdmin(admin.ModelAdmin):
 class SubTopicAdmin(admin.ModelAdmin):
     list_display = ('title', 'topic', 'order', 'created_at')
     list_filter = ('topic__language', 'topic')
-    search_fields = ('title', 'content')
+    search_fields = ('title', 'content', 'content_code')
     prepopulated_fields = {'slug': ('title',)}
+    fields = ('topic', 'title', 'slug', 'content_type', 'content', 'content_code', 'order')
 
     class Media:
         js = (
             'https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js',
             'js/admin_ckeditor.js',
+            'js/admin_learn_toggle.js',
         )
 
 

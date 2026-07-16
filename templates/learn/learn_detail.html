@@ -101,7 +101,11 @@
                                     <div class="subtopic-card card border-0 bg-light p-4 rounded-4 shadow-sm" id="subtopic-{{ sub.id }}">
                                         <h4 class="font-heading fw-semibold text-dark mb-3"><i class="fa-solid fa-hashtag me-2 text-primary" style="color: var(--accent) !important;"></i>{{ sub.title }}</h4>
                                         <div class="subtopic-content font-body">
-                                            {{ sub.content|safe }}
+                                            {% if sub.content_type == 'code' %}
+                                                {{ sub.content_code|safe }}
+                                            {% else %}
+                                                {{ sub.content|safe }}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
