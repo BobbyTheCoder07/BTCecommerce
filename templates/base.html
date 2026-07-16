@@ -192,6 +192,7 @@
     </div>
 
     <!-- Floating Social Dock -->
+    {% if "/learn/" not in request.path %}
     <div class="social-floating-dock">
         <a href="https://www.instagram.com/bobby.thecoder/" target="_blank" class="social-dock-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
         <a href="https://youtube.com/@BobbyTheCoder" target="_blank" class="social-dock-link" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
@@ -200,6 +201,7 @@
         <a href="https://t.me" target="_blank" class="social-dock-link" title="Telegram"><i class="fa-brands fa-telegram"></i></a>
         <a href="https://wa.me" target="_blank" class="social-dock-link" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
+    {% endif %}
 
     <!-- Mobile Bottom Navigation Dock -->
     <div class="mobile-bottom-nav">

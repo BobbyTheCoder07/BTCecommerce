@@ -25,12 +25,17 @@
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    /* Active subtopic sidebar link style */
+    .subtopic-sidebar-link.active {
+        color: var(--accent) !important;
+        font-weight: 600;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="py-5 position-relative dot-pattern">
-    <div class="container py-4">
+    <div class="container-fluid px-lg-5 py-4">
         <!-- Breadcrumb / Header -->
         <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-light pb-3">
             <div class="d-flex align-items-center gap-3">
@@ -49,7 +54,7 @@
                         {% for topic in topics %}
                             <div class="topic-item-wrapper mb-2">
                                 <a href="{% url 'topic_detail' language.slug topic.slug %}" 
-                                   class="topic-sidebar-link {% if active_topic.slug == topic.slug %}active{% endif %}" 
+                                   class="topic-sidebar-link {% if active_topic.slug == topic.slug and not active_subtopic %}active{% endif %}" 
                                    data-slug="{{ topic.slug }}" 
                                    onclick="loadTopicAjax(event, '{{ language.slug }}', '{{ topic.slug }}')">
                                     <span>{{ forloop.counter }}. {{ topic.title }}</span>
@@ -58,7 +63,10 @@
                                 {% if topic.subtopics.all %}
                                     <div class="subtopic-sidebar-group ps-3 mt-1 {% if active_topic.slug != topic.slug %}d-none{% endif %}" id="subtopics-list-{{ topic.slug }}">
                                         {% for subtopic in topic.subtopics.all %}
-                                            <a href="#subtopic-{{ subtopic.id }}" class="d-block py-1 text-decoration-none text-muted small hover-text-primary">
+                                            <a href="{% url 'topic_detail' language.slug topic.slug %}?subtopic={{ subtopic.slug }}" 
+                                               class="subtopic-sidebar-link d-block py-1 text-decoration-none text-muted small hover-text-primary {% if active_subtopic.slug == subtopic.slug %}active{% endif %}"
+                                               data-subtopic-slug="{{ subtopic.slug }}"
+                                               onclick="loadTopicAjax(event, '{{ language.slug }}', '{{ topic.slug }}', '{{ subtopic.slug }}')">
                                                 <i class="fa-solid fa-circle-dot me-2 text-primary" style="font-size: 8px; color: var(--accent) !important;"></i>{{ subtopic.title }}
                                             </a>
                                         {% endfor %}
@@ -74,7 +82,26 @@
 
             <!-- RIGHT SIDE: Lesson Content Panel -->
             <main class="learn-content-card border border-light" id="lessonContentPanel">
-                {% if active_topic %}
+                {% if active_subtopic %}
+                    <div id="topicRenderBlock" class="content-fade-in">
+                        <!-- Top Metadata -->
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 border-bottom border-light pb-3">
+                            <h2 class="font-heading fw-bold text-dark mb-0" id="topicTitle">{{ active_subtopic.title }}</h2>
+                            <span class="badge-premium small text-capitalize" id="topicDifficulty">
+                                <i class="fa-solid fa-shield"></i> {{ active_topic.get_difficulty_display }}
+                            </span>
+                        </div>
+
+                        <!-- Main Rich HTML Content Area (safe rendering for CKEditor output) -->
+                        <div class="topic-content-body font-body mb-5" id="topicContent">
+                            {% if active_subtopic.content_type == 'code' %}
+                                {{ active_subtopic.content_code|safe }}
+                            {% else %}
+                                {{ active_subtopic.content|safe }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% elif active_topic %}
                     <div id="topicRenderBlock" class="content-fade-in">
                         <!-- Top Metadata -->
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 border-bottom border-light pb-3">
@@ -91,25 +118,6 @@
                             {% else %}
                                 {{ active_topic.content|safe }}
                             {% endif %}
-                        </div>
-
-                        <!-- Subtopics Section -->
-                        <div id="subtopicsContainer" class="mt-5" style="{% if not active_topic.subtopics.all %}display: none;{% endif %}">
-                            <h3 class="font-heading fw-bold text-dark mb-4 pb-2 border-bottom"><i class="fa-solid fa-layer-group me-2 text-primary" style="color: var(--accent) !important;"></i>Subtopics</h3>
-                            <div id="subtopicsList" class="d-flex flex-column gap-4">
-                                {% for sub in active_topic.subtopics.all %}
-                                    <div class="subtopic-card card border-0 bg-light p-4 rounded-4 shadow-sm" id="subtopic-{{ sub.id }}">
-                                        <h4 class="font-heading fw-semibold text-dark mb-3"><i class="fa-solid fa-hashtag me-2 text-primary" style="color: var(--accent) !important;"></i>{{ sub.title }}</h4>
-                                        <div class="subtopic-content font-body">
-                                            {% if sub.content_type == 'code' %}
-                                                {{ sub.content_code|safe }}
-                                            {% else %}
-                                                {{ sub.content|safe }}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
                         </div>
                     </div>
                 {% else %}
@@ -132,18 +140,29 @@
 
 <script>
     // AJAX Topic Switching Function
-    function loadTopicAjax(event, langSlug, topicSlug) {
+    function loadTopicAjax(event, langSlug, topicSlug, subtopicSlug = null) {
         event.preventDefault(); // Stop page refresh
 
-        const sidebarLinks = document.querySelectorAll('.topic-sidebar-link');
-        const activeLink = document.querySelector(`.topic-sidebar-link[data-slug="${topicSlug}"]`);
+        const topicLinks = document.querySelectorAll('.topic-sidebar-link');
+        const subtopicLinks = document.querySelectorAll('.subtopic-sidebar-link');
         
-        // Update active class immediately on navigation links
-        sidebarLinks.forEach(link => link.classList.remove('active'));
-        if (activeLink) activeLink.classList.add('active');
+        // Remove active class from all links
+        topicLinks.forEach(link => link.classList.remove('active'));
+        subtopicLinks.forEach(link => link.classList.remove('active'));
+
+        if (subtopicSlug) {
+            const activeSubLink = document.querySelector(`.subtopic-sidebar-link[data-subtopic-slug="${subtopicSlug}"]`);
+            if (activeSubLink) activeSubLink.classList.add('active');
+        } else {
+            const activeTopicLink = document.querySelector(`.topic-sidebar-link[data-slug="${topicSlug}"]`);
+            if (activeTopicLink) activeTopicLink.classList.add('active');
+        }
 
         // Fetch URL route with AJAX parameter
-        const fetchUrl = `/learn/${langSlug}/${topicSlug}/?ajax=true`;
+        let fetchUrl = `/learn/${langSlug}/${topicSlug}/?ajax=true`;
+        if (subtopicSlug) {
+            fetchUrl += `&subtopic=${subtopicSlug}`;
+        }
 
         fetch(fetchUrl, {
             headers: {
@@ -163,32 +182,14 @@
             const contentContainer = document.getElementById('topicContent');
             contentContainer.innerHTML = data.content;
 
-            // Swap subtopics
-            const subContainer = document.getElementById('subtopicsContainer');
-            const subList = document.getElementById('subtopicsList');
-            subList.innerHTML = '';
-            if (data.subtopics && data.subtopics.length > 0) {
-                data.subtopics.forEach(sub => {
-                    const card = document.createElement('div');
-                    card.className = 'subtopic-card card border-0 bg-light p-4 rounded-4 shadow-sm';
-                    card.innerHTML = `
-                        <h4 class="font-heading fw-semibold text-dark mb-3"><i class="fa-solid fa-hashtag me-2 text-primary" style="color: var(--accent) !important;"></i>${sub.title}</h4>
-                        <div class="subtopic-content font-body">
-                            ${sub.content}
-                        </div>
-                    `;
-                    subList.appendChild(card);
-                });
-                subContainer.style.display = '';
-            } else {
-                subContainer.style.display = 'none';
-            }
-
-            // Toggle subtopic sidebar visibility
-            document.querySelectorAll('.subtopic-sidebar-group').forEach(el => el.classList.add('d-none'));
-            const activeSubList = document.getElementById(`subtopics-list-${topicSlug}`);
-            if (activeSubList) {
-                activeSubList.classList.remove('d-none');
+            // If it's a topic click (not subtopic), update sidebar list of subtopics
+            if (!data.is_subtopic) {
+                // Toggle subtopic sidebar visibility
+                document.querySelectorAll('.subtopic-sidebar-group').forEach(el => el.classList.add('d-none'));
+                const activeSubList = document.getElementById(`subtopics-list-${topicSlug}`);
+                if (activeSubList) {
+                    activeSubList.classList.remove('d-none');
+                }
             }
             
             // Trigger Fade animation
@@ -201,8 +202,11 @@
             Prism.highlightAll();
 
             // Update browser URL query path using pushState
-            const newUrl = `/learn/${langSlug}/${topicSlug}/`;
-            history.pushState({ lang: langSlug, topic: topicSlug }, data.title, newUrl);
+            let newUrl = `/learn/${langSlug}/${topicSlug}/`;
+            if (subtopicSlug) {
+                newUrl += `?subtopic=${subtopicSlug}`;
+            }
+            history.pushState({ lang: langSlug, topic: topicSlug, subtopic: subtopicSlug }, data.title, newUrl);
             document.title = `${data.title} | ${langSlug.toUpperCase()} Academy | BobbyTheCoder`;
         })
         .catch(err => {
