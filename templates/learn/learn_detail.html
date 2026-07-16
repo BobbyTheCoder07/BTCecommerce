@@ -84,16 +84,13 @@
                             </span>
                         </div>
 
-                        <!-- Topic Description (if exists) -->
-                        <div id="topicDescriptionContainer" class="mb-4" style="{% if not active_topic.description %}display: none;{% endif %}">
-                            <div id="topicDescription" class="p-3 bg-light rounded-3 border-start border-primary border-3 text-muted fst-italic">
-                                {{ active_topic.description|safe }}
-                            </div>
-                        </div>
-
                         <!-- Main Rich HTML Content Area (safe rendering for CKEditor output) -->
                         <div class="topic-content-body font-body mb-5" id="topicContent">
-                            {{ active_topic.content|safe }}
+                            {% if active_topic.content_type == 'code' %}
+                                {{ active_topic.content_code|safe }}
+                            {% else %}
+                                {{ active_topic.content|safe }}
+                            {% endif %}
                         </div>
 
                         <!-- Subtopics Section -->
@@ -158,16 +155,6 @@
             document.getElementById('topicTitle').innerText = data.title;
             document.getElementById('topicDifficulty').innerHTML = `<i class="fa-solid fa-shield"></i> ${data.difficulty}`;
             
-            // Swap description
-            const descContainer = document.getElementById('topicDescriptionContainer');
-            const descBody = document.getElementById('topicDescription');
-            if (data.description) {
-                descBody.innerHTML = data.description;
-                descContainer.style.display = '';
-            } else {
-                descContainer.style.display = 'none';
-            }
-
             // Swap main content body
             const contentContainer = document.getElementById('topicContent');
             contentContainer.innerHTML = data.content;

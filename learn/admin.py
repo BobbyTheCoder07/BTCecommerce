@@ -18,27 +18,16 @@ class SubTopicInline(admin.StackedInline):
 class TopicAdmin(admin.ModelAdmin):
     list_display = ('title', 'language', 'difficulty', 'order', 'created_at')
     list_filter = ('language', 'difficulty')
-    search_fields = ('title', 'content', 'description')
+    search_fields = ('title', 'content', 'content_code')
     prepopulated_fields = {'slug': ('title',)}
-    fieldsets = (
-        (None, {
-            'fields': ('language', 'title', 'slug', 'difficulty', 'order')
-        }),
-        ('Description (Rich Editor)', {
-            'fields': ('description',),
-            'description': 'Short overview of this topic. CKEditor enabled.'
-        }),
-        ('Main Content (Rich Editor + Code)', {
-            'fields': ('content',),
-            'description': 'Full topic content. CKEditor enabled with code block support.'
-        }),
-    )
+    fields = ('language', 'title', 'slug', 'difficulty', 'order', 'content_type', 'content', 'content_code')
     inlines = [SubTopicInline]
 
     class Media:
         js = (
             'https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js',
             'js/admin_ckeditor.js',
+            'js/admin_learn_toggle.js',
         )
 
 

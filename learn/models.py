@@ -24,15 +24,22 @@ class Topic(models.Model):
         ('intermediate', 'Intermediate'),
         ('advanced', 'Advanced'),
     ]
+    CONTENT_TYPE_CHOICES = [
+        ('editor', 'Rich HTML Editor (CKEditor)'),
+        ('code', 'Raw HTML Code'),
+    ]
 
     language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
-    description = models.TextField(
-        blank=True, default='',
-        help_text="Short description/overview of this topic. Supports rich HTML (CKEditor)."
+    content_type = models.CharField(
+        max_length=15, 
+        choices=CONTENT_TYPE_CHOICES, 
+        default='editor',
+        help_text="Choose 'Rich HTML Editor' for normal text editing, or 'Raw HTML Code' to paste raw HTML."
     )
-    content = models.TextField(help_text="Topic content in HTML. Will render with |safe.")
+    content = models.TextField(blank=True, default="", help_text="Topic content in Rich HTML. Used if Rich HTML Editor is selected.")
+    content_code = models.TextField(blank=True, default="", help_text="Topic content in Raw HTML. Used if Raw HTML Code is selected.")
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='beginner')
     order = models.PositiveIntegerField(default=0, help_text="Custom order rank in sidebar")
     created_at = models.DateTimeField(auto_now_add=True)

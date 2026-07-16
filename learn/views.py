@@ -39,11 +39,12 @@ def learn_detail_view(request, lang_slug, topic_slug=None):
                     'content': sub.content,
                 })
         
+        topic_content = active_topic.content_code if active_topic.content_type == 'code' else active_topic.content
+        
         return JsonResponse({
             'title': active_topic.title,
             'difficulty': active_topic.get_difficulty_display(),
-            'description': active_topic.description,
-            'content': active_topic.content,
+            'content': topic_content,
             'order': active_topic.order,
             'subtopics': subtopics_list
         })
